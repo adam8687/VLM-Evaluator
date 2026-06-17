@@ -621,7 +621,7 @@
 
           <div>
             <label>Video ID / Filename</label>
-            <input type="text" id="video-id" placeholder="e.g., 5_failure.mp4" />
+            <input type="text" id="video-id" placeholder="e.g., 5_failure.mp4" oninput="applyGroundTruthFromVideoId(this.value)" />
           </div>
 
           <div>
@@ -901,6 +901,62 @@ function loadVideoFile(file) {
   if (!document.getElementById('video-id').value) {
     document.getElementById('video-id').value = file.name;
   }
+  applyGroundTruthFromVideoId(file.name);
+}
+
+function inferGroundTruthFromFilename(filename) {
+  const name = String(filename || '').toLowerCase();
+  if (!name) return null;
+  const hasSuccess = /(^|[^a-z])(success|successful|passed|pass)($|[^a-z])/.test(name);
+  const hasFailure = /(^|[^a-z])(failure|failed|fail|error)($|[^a-z])/.test(name);
+  if (hasSuccess && !hasFailure) return 'Success';
+  if (hasFailure && !hasSuccess) return 'Failure';
+  return null;
+}
+
+function inferPredictionFromOutput(output) {
+  const text = String(output || '').trim().toLowerCase();
+  if (!text) return null;
+  if (text.startsWith('[error]') || /\b(truncated|cut off|incomplete response|max token)\b/.test(text)) return 'Truncated';
+
+  const hasSuccess = /\b(success|successful|succeeded|pass|passed)\b/.test(text);
+  const hasFailure = /\b(failure|failed|fail|failing|unsuccessful|error)\b/.test(text);
+
+  if (hasSuccess && !hasFailure) return 'Success';
+  if (hasFailure && !hasSuccess) return 'Failure';
+  return null;
+}
+
+function setRadioValue(group, value) {
+  const target = document.querySelector(`[data-group="${group}"][data-val="${value}"]`);
+  if (!target) return false;
+  selectRadio(target, group);
+  return true;
+}
+
+function autoSetAccuracyFromLabels() {
+  if (!groundTruth || !modelPrediction) return;
+  if (modelPrediction === 'Truncated') {
+    setAccuracy('Flawed');
+    return;
+  }
+  setAccuracy(groundTruth === modelPrediction ? 'Accurate' : 'Flawed');
+}
+
+function applyGroundTruthFromVideoId(videoId) {
+  const inferred = inferGroundTruthFromFilename(videoId);
+  if (!inferred) return;
+  if (setRadioValue('gt', inferred)) {
+    autoSetAccuracyFromLabels();
+  }
+}
+
+function applyPredictionFromOutput(outputText) {
+  const inferred = inferPredictionFromOutput(outputText);
+  if (!inferred) return;
+  if (setRadioValue('pred', inferred)) {
+    autoSetAccuracyFromLabels();
+  }
 }
 
 // ─── RADIO SELECTION ──────────────────────────────────────────────────────────
@@ -915,6 +971,8 @@ function selectRadio(el, group) {
 
   if (group === 'gt') groundTruth = val;
   if (group === 'pred') modelPrediction = val;
+
+  autoSetAccuracyFromLabels();
 }
 
 // ─── ACCURACY TOGGLE ─────────────────────────────────────────────────────────
@@ -1446,6 +1504,7 @@ async function runModel() {
         : await callOpenAI(apiKey, model, prompt, frames);
     document.getElementById('model-output').value = output;
     document.getElementById('model-output').scrollTop = 0;
+    applyPredictionFromOutput(output);
     document.getElementById('output-status').textContent = `✓ Output from ${model}`;
     document.getElementById('output-status').style.color = 'var(--green)';
     showToast('✓ Response received — review and score below.', 'ok');
