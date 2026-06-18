@@ -449,6 +449,43 @@
   }
   .row-new { animation: row-flash 1.2s ease-out; }
 
+  /* Session cards */
+  .session-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  .session-card:hover { border-color: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
+  .session-card-active { border-color: var(--accent); background: rgba(99,102,241,0.06); }
+  .session-card-active::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    border-radius: 12px 12px 0 0;
+  }
+  .session-card-name { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+  .session-card-meta { font-size: 0.72rem; color: var(--text-secondary); }
+  .session-stat-val { font-size: 1.4rem; font-weight: 700; line-height: 1; }
+  .session-stat-lbl { font-size: 0.68rem; color: var(--text-secondary); margin-top: 3px; }
+  .session-name-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: text;
+    width: 160px;
+  }
+  .session-name-input:focus { border-bottom: 1px solid var(--accent); }
+
   /* ── Tabs ─────────────────────────────────────────── */
   .tab-bar {
     display: flex;
@@ -500,16 +537,18 @@
 <!-- HEADER BAR -->
 <div class="header-bar">
   <div>
-    <div class="logo-text">⬡ VideoLLM Eval</div>
+    <div class="logo-text">⬡ VLM Eval</div>
     <div class="logo-sub">AI Model Benchmarking Dashboard</div>
   </div>
   <div style="display:flex;align-items:center;gap:12px;">
-    <span style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--text-secondary);">
-      <span class="live-dot"></span> Session Active
-    </span>
-    <button class="btn-secondary" onclick="exportCSV()" data-tip="Export as CSV" style="padding:8px 14px;font-size:0.8rem;">⬇ CSV</button>
+    <div style="display:flex;align-items:center;gap:8px;background:var(--surface-3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;">
+      <span class="live-dot"></span>
+      <input class="session-name-input" id="session-name" value="Loading…" onchange="renameSession(this.value)" title="Click to rename session" />
+      <span id="session-eval-count" style="font-size:0.68rem;color:var(--text-secondary);"></span>
+    </div>
+    <button class="btn-secondary" onclick="exportCSV()" style="padding:8px 14px;font-size:0.8rem;">⬇ CSV</button>
     <button class="btn-primary" onclick="exportJSON()" style="padding:8px 14px;font-size:0.8rem;">⬇ Export JSON</button>
-    <button class="btn-danger" onclick="clearAllData()" style="font-size:0.75rem;" data-tip="Wipe all session data">✕ Clear</button>
+    <button class="btn-secondary" onclick="newSession()" style="padding:8px 14px;font-size:0.8rem;border-color:var(--accent);color:var(--accent);">+ New Session</button>
   </div>
 </div>
 
@@ -585,6 +624,7 @@
     <button class="tab-btn active" data-tab="evaluate" onclick="switchTab('evaluate')">▶ Evaluate</button>
     <button class="tab-btn" data-tab="log" onclick="switchTab('log')">📊 Log <span class="tab-badge" id="tab-log-badge">0</span></button>
     <button class="tab-btn" data-tab="insights" onclick="switchTab('insights')">💡 Insights</button>
+    <button class="tab-btn" data-tab="sessions" onclick="switchTab('sessions')">🗂 Sessions <span class="tab-badge" id="tab-sessions-badge">1</span></button>
   </div>
 
   <!-- TAB: EVALUATE -->
@@ -610,8 +650,10 @@
         <video id="video-player" controls preload="metadata" style="margin-top:12px;"></video>
 
         <!-- Filename display -->
-        <div id="filename-display" style="display:none;margin-top:10px;padding:8px 12px;background:var(--surface-3);border:1px solid var(--border);border-radius:7px;font-size:0.78rem;color:var(--text-secondary);word-break:break-all;">
-          <span style="color:var(--accent);font-weight:600;">📄 </span><span id="filename-text"></span>
+        <div id="filename-display" style="display:none;margin-top:10px;padding:7px 10px 7px 12px;background:var(--surface-3);border:1px solid var(--border);border-radius:7px;font-size:0.78rem;color:var(--text-secondary);word-break:break-all;display:none;align-items:center;gap:8px;">
+          <span style="color:var(--accent);font-weight:600;flex-shrink:0;">📄</span>
+          <span id="filename-text" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+          <button onclick="clearVideoUpload()" title="Remove video" style="flex-shrink:0;background:transparent;border:none;cursor:pointer;color:var(--text-secondary);font-size:1rem;padding:2px 4px;border-radius:4px;line-height:1;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-secondary)'">✕</button>
         </div>
       </div>
 
@@ -631,14 +673,15 @@
             </label>
             <input type="text" id="model-select" list="model-list" value="gpt-5.5" placeholder="gpt-5.5" oninput="updateProviderBadge()" />
             <datalist id="model-list">
-              <option value="gpt-5.5">GPT 5.5 (OpenAI — paid key)</option>
-              <option value="gpt-4o">GPT-4o (OpenAI or GitHub — free PAT)</option>
-              <option value="gpt-4o-mini">GPT-4o mini (OpenAI or GitHub — free PAT)</option>
-              <option value="o1-mini">o1-mini (GitHub — free PAT)</option>
-              <option value="Meta-Llama-3.1-70B-Instruct">Llama 3.1 70B (GitHub — free PAT)</option>
-              <option value="gemini-2.5-flash">Gemini 2.5 Flash (Google — free tier)</option>
-              <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google — free tier)</option>
-              <option value="gemini-1.5-flash">Gemini 1.5 Flash (Google — free tier)</option>
+              <option value="gpt-4o">gpt-4o — vision, recommended (OpenAI / GitHub free)</option>
+              <option value="gpt-4o-mini">gpt-4o-mini — cheaper (OpenAI / GitHub free)</option>
+              <option value="gpt-4.1">gpt-4.1 (OpenAI)</option>
+              <option value="gpt-4.5-preview">gpt-4.5-preview (OpenAI)</option>
+              <option value="o4-mini">o4-mini (OpenAI)</option>
+              <option value="Meta-Llama-3.1-70B-Instruct">Meta-Llama-3.1-70B-Instruct (GitHub free)</option>
+              <option value="gemini-2.5-flash">gemini-2.5-flash (Google — free tier)</option>
+              <option value="gemini-2.0-flash">gemini-2.0-flash (Google — free tier)</option>
+              <option value="gemini-1.5-flash">gemini-1.5-flash (Google — free tier)</option>
             </datalist>
           </div>
 
@@ -701,7 +744,7 @@
             <span>Model Output</span>
             <span id="output-status" style="font-size:0.7rem;color:var(--text-secondary);">awaiting run…</span>
           </label>
-          <textarea id="model-output" rows="8" placeholder="Output will appear here automatically after clicking ▶ Run Model above…"></textarea>
+          <textarea id="model-output" rows="8" placeholder="Paste ChatGPT (or any model) output here — prediction, verdict &amp; error tags will auto-fill…" oninput="analyzeModelOutput(this.value)" onpaste="setTimeout(()=>analyzeModelOutput(this.value),0)"></textarea>
         </div>
 
         <!-- Ground Truth -->
@@ -838,6 +881,13 @@
     </div>
   </div><!-- /tab-insights -->
 
+  <!-- TAB: SESSIONS -->
+  <div class="tab-pane" id="tab-sessions">
+    <div id="sessions-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;">
+      <!-- rendered by renderSessionsTab() -->
+    </div>
+  </div><!-- /tab-sessions -->
+
 </div>
 
 <!-- TOAST -->
@@ -845,7 +895,9 @@
 
 <script>
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let evaluations = JSON.parse(localStorage.getItem('videoLLMEvals') || '[]');
+let allSessions = [];
+let currentSessionId = null;
+let evaluations = []; // always mirrors getCurrentSession().evaluations
 let currentAccuracy = null;
 let groundTruth = null;
 let modelPrediction = null;
@@ -862,10 +914,12 @@ const ERROR_MODES = [
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 function init() {
+  loadSessionData();
   loadSavedApiKey();
   renderTable();
   updateMetrics();
   renderInsights();
+  renderSessionsTab();
 }
 
 // ─── FILE UPLOAD ──────────────────────────────────────────────────────────────
@@ -896,12 +950,27 @@ function loadVideoFile(file) {
   player.style.display = 'block';
   document.getElementById('drop-icon').textContent = '✅';
   document.getElementById('drop-label').textContent = file.name;
-  document.getElementById('filename-display').style.display = 'block';
+  const fd = document.getElementById('filename-display');
+  fd.style.display = 'flex';
   document.getElementById('filename-text').textContent = file.name;
   if (!document.getElementById('video-id').value) {
     document.getElementById('video-id').value = file.name;
   }
   applyGroundTruthFromVideoId(file.name);
+}
+
+function clearVideoUpload() {
+  const player = document.getElementById('video-player');
+  player.pause();
+  player.removeAttribute('src');
+  player.load();
+  player.style.display = 'none';
+  if (currentVideoURL) { URL.revokeObjectURL(currentVideoURL); currentVideoURL = null; }
+  document.getElementById('drop-icon').textContent = '🎦';
+  document.getElementById('drop-label').textContent = 'Drop MP4 here or click to browse';
+  document.getElementById('filename-display').style.display = 'none';
+  document.getElementById('filename-text').textContent = '';
+  document.getElementById('file-input').value = '';
 }
 
 function inferGroundTruthFromFilename(filename) {
@@ -919,12 +988,32 @@ function inferPredictionFromOutput(output) {
   if (!text) return null;
   if (text.startsWith('[error]') || /\b(truncated|cut off|incomplete response|max token)\b/.test(text)) return 'Truncated';
 
-  const hasSuccess = /\b(success|successful|succeeded|pass|passed)\b/.test(text);
-  const hasFailure = /\b(failure|failed|fail|failing|unsuccessful|error)\b/.test(text);
+  // Structured output fields (final_status: success / failure)
+  const statusMatch = text.match(/final[_\s-]?status[:\s]+([a-z-]+)/);
+  if (statusMatch) {
+    const s = statusMatch[1];
+    if (/success/.test(s)) return 'Success';
+    if (/fail|inconclusive|truncat/.test(s)) return s.includes('truncat') ? 'Truncated' : 'Failure';
+  }
+
+  const hasSuccess = /\b(success|successful|succeeded|pass|passed|task complete|completed successfully|achieved|correctly placed|locked|closed successfully)\b/.test(text);
+  const hasFailure = /\b(failure|failed|fail|failing|unsuccessful|error|not complete|did not|couldn't|could not|dropped|missed|wrong|incorrect|never)\b/.test(text);
 
   if (hasSuccess && !hasFailure) return 'Success';
   if (hasFailure && !hasSuccess) return 'Failure';
+  if (hasSuccess && hasFailure) return 'Failure'; // mixed signals → lean failure
   return null;
+}
+
+function inferErrorTagsFromOutput(output) {
+  const text = String(output || '').toLowerCase();
+  const tags = [];
+  if (/\b(hallucin|fabricat|invented|non-?existent|not present|doesn't exist|ghost)\b/.test(text)) tags.push('Hallucinated Asset');
+  if (/\b(timestamp|time.?step|temporal|frame \d|second|at \d+s|:xx|00:|timing)\b/.test(text)) tags.push('Temporal / Timestamp Error');
+  if (/\b(perspective|angle|camera|side.?view|overhead|occlud|depth|parallax|illusion)\b/.test(text)) tags.push('Perspective Illusion');
+  if (/\b(root.?cause|why|reason|underlying|misidentif|wrong cause|attributed)\b/.test(text)) tags.push('Missed Root Cause');
+  if (/\b(context|earlier|previous|prior frame|forgot|lost track|unaware)\b/.test(text)) tags.push('Context Loss');
+  return tags;
 }
 
 function setRadioValue(group, value) {
@@ -956,6 +1045,31 @@ function applyPredictionFromOutput(outputText) {
   if (!inferred) return;
   if (setRadioValue('pred', inferred)) {
     autoSetAccuracyFromLabels();
+  }
+}
+
+function applyErrorTagsFromOutput(outputText) {
+  const tags = inferErrorTagsFromOutput(outputText);
+  // Only auto-tag if verdict is Flawed (or not yet set)
+  if (currentAccuracy === 'Accurate') return;
+  document.querySelectorAll('#error-checkboxes input[type="checkbox"]').forEach(cb => {
+    const shouldCheck = tags.includes(cb.value);
+    if (shouldCheck !== cb.checked) {
+      cb.checked = shouldCheck;
+      toggleCheckStyle(cb);
+    }
+  });
+}
+
+function analyzeModelOutput(text) {
+  if (!text.trim()) return;
+  applyPredictionFromOutput(text);
+  applyErrorTagsFromOutput(text);
+  // Update output status
+  const status = document.getElementById('output-status');
+  if (status && status.textContent.includes('awaiting')) {
+    status.textContent = 'pasted';
+    status.style.color = 'var(--blue)';
   }
 }
 
@@ -1025,7 +1139,8 @@ function submitEvaluation() {
   };
 
   evaluations.push(entry);
-  localStorage.setItem('videoLLMEvals', JSON.stringify(evaluations));
+  saveAllSessions();
+  renderSessionsTab();
 
   renderTable();
   updateMetrics();
@@ -1055,15 +1170,29 @@ function resetForm() {
   });
 }
 
+// ─── RENAME VIDEO ID ──────────────────────────────────────────────────────────
+function renameVideoId(el) {
+  const id = parseInt(el.dataset.id);
+  const newName = el.textContent.trim();
+  const entry = evaluations.find(e => e.id === id);
+  if (!entry) return;
+  if (!newName) { el.textContent = entry.videoId; return; }
+  entry.videoId = newName;
+  getCurrentSession().evaluations = evaluations;
+  saveAllSessions();
+}
+
 // ─── DELETE ENTRY ─────────────────────────────────────────────────────────────
 function deleteEntry(id) {
   evaluations = evaluations.filter(e => e.id !== id);
   // Resequence
   evaluations.forEach((e, i) => e.seq = i + 1);
-  localStorage.setItem('videoLLMEvals', JSON.stringify(evaluations));
+  getCurrentSession().evaluations = evaluations;
+  saveAllSessions();
   renderTable();
   updateMetrics();
   renderInsights();
+  renderSessionsTab();
   showToast('Entry deleted.', 'info');
 }
 
@@ -1090,9 +1219,21 @@ function renderTable() {
     const modelShort = e.modelName.length > 16 ? e.modelName.slice(0, 14) + '…' : e.modelName;
     const vidShort = e.videoId.length > 18 ? e.videoId.slice(0, 16) + '…' : e.videoId;
 
-    return `<tr class="${isNew ? 'row-new' : ''}" title="${escapeHtml(e.videoId)} — ${escapeHtml(e.modelName)}">
+    return `<tr class="${isNew ? 'row-new' : ''}">
       <td style="color:var(--text-secondary);">${e.seq}</td>
-      <td title="${escapeHtml(e.videoId)}" style="font-weight:600;color:var(--accent);">${escapeHtml(vidShort)}</td>
+      <td>
+        <span
+          contenteditable="true"
+          spellcheck="false"
+          title="Click to rename"
+          data-id="${e.id}"
+          onblur="renameVideoId(this)"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+          style="display:inline-block;font-weight:600;color:var(--accent);outline:none;border-bottom:1px dashed transparent;border-radius:2px;padding:1px 3px;cursor:text;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+          onfocus="this.style.borderBottomColor='var(--accent)';this.style.background='rgba(99,102,241,0.08)'"
+          onfocusout="this.style.borderBottomColor='transparent';this.style.background=''"
+        >${escapeHtml(e.videoId)}</span>
+      </td>
       <td title="${escapeHtml(e.modelName)}">${escapeHtml(modelShort)}</td>
       <td>${gtBadge}</td>
       <td>${predBadge}</td>
@@ -1301,14 +1442,164 @@ function dateStamp() {
 
 // ─── CLEAR ALL ────────────────────────────────────────────────────────────────
 function clearAllData() {
-  if (!confirm('Clear all logged evaluations from this session? This cannot be undone.')) return;
-  evaluations = [];
-  localStorage.removeItem('videoLLMEvals');
+  // Legacy: repurposed as session reset (now exposed as New Session in UI)
+  newSession();
+}
+
+// ─── SESSION MANAGEMENT ───────────────────────────────────────────────────────
+function makeSession(name) {
+  return { id: Date.now().toString() + Math.random().toString(36).slice(2), name, createdAt: new Date().toISOString(), evaluations: [] };
+}
+
+function getCurrentSession() {
+  return allSessions.find(s => s.id === currentSessionId) || allSessions[0];
+}
+
+function loadSessionData() {
+  const raw = localStorage.getItem('videoLLMSessions');
+  if (raw) {
+    try {
+      const data = JSON.parse(raw);
+      allSessions = data.sessions || [];
+      currentSessionId = data.currentSessionId || null;
+    } catch(e) { allSessions = []; }
+  }
+  // Migrate old flat format
+  const legacy = localStorage.getItem('videoLLMEvals');
+  if (legacy && allSessions.length === 0) {
+    try {
+      const old = JSON.parse(legacy);
+      if (old.length > 0) {
+        const s = makeSession('Session 1 (migrated)');
+        s.evaluations = old;
+        allSessions = [s];
+        currentSessionId = s.id;
+        saveAllSessions();
+        localStorage.removeItem('videoLLMEvals');
+      }
+    } catch(e) {}
+  }
+  if (allSessions.length === 0 || !currentSessionId || !allSessions.find(s => s.id === currentSessionId)) {
+    const s = makeSession(defaultSessionName());
+    allSessions = allSessions.length ? allSessions : [s];
+    currentSessionId = allSessions[allSessions.length - 1].id;
+    saveAllSessions();
+  }
+  evaluations = getCurrentSession().evaluations;
+  updateSessionIndicator();
+}
+
+function saveAllSessions() {
+  getCurrentSession().evaluations = evaluations;
+  localStorage.setItem('videoLLMSessions', JSON.stringify({ currentSessionId, sessions: allSessions }));
+  const badge = document.getElementById('tab-sessions-badge');
+  if (badge) badge.textContent = allSessions.length;
+}
+
+function newSession() {
+  const s = makeSession(defaultSessionName());
+  allSessions.push(s);
+  currentSessionId = s.id;
+  evaluations = s.evaluations;
+  saveAllSessions();
   renderTable();
   updateMetrics();
   renderInsights();
+  renderSessionsTab();
+  updateSessionIndicator();
   resetForm();
-  showToast('Session data cleared.', 'info');
+  showToast(`✓ Started “${s.name}”`, 'ok');
+}
+
+function loadSession(id) {
+  currentSessionId = id;
+  evaluations = getCurrentSession().evaluations;
+  saveAllSessions();
+  renderTable();
+  updateMetrics();
+  renderInsights();
+  renderSessionsTab();
+  updateSessionIndicator();
+  switchTab('evaluate');
+  showToast(`✓ Loaded “${getCurrentSession().name}”`, 'ok');
+}
+
+function deleteSession(id) {
+  if (allSessions.length <= 1) { showToast('Cannot delete the only session.', 'warn'); return; }
+  const name = allSessions.find(s => s.id === id)?.name || 'session';
+  if (!confirm(`Delete “${name}” and all its evaluations? This cannot be undone.`)) return;
+  allSessions = allSessions.filter(s => s.id !== id);
+  if (currentSessionId === id) {
+    currentSessionId = allSessions[allSessions.length - 1].id;
+    evaluations = getCurrentSession().evaluations;
+  }
+  saveAllSessions();
+  renderTable();
+  updateMetrics();
+  renderInsights();
+  renderSessionsTab();
+  updateSessionIndicator();
+  showToast(`“${name}” deleted.`, 'info');
+}
+
+function renameSession(name) {
+  if (!name.trim()) return;
+  getCurrentSession().name = name.trim();
+  saveAllSessions();
+  renderSessionsTab();
+}
+
+function updateSessionIndicator() {
+  const s = getCurrentSession();
+  if (!s) return;
+  const nameEl = document.getElementById('session-name');
+  if (nameEl) nameEl.value = s.name;
+  const countEl = document.getElementById('session-eval-count');
+  if (countEl) countEl.textContent = s.evaluations.length ? `${s.evaluations.length} eval${s.evaluations.length !== 1 ? 's' : ''}` : 'empty';
+}
+
+function defaultSessionName() {
+  const n = allSessions.length + 1;
+  const d = new Date();
+  const ds = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const ts = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+  return `Session ${n} · ${ds} ${ts}`;
+}
+
+function renderSessionsTab() {
+  const grid = document.getElementById('sessions-grid');
+  if (!grid) return;
+  if (allSessions.length === 0) {
+    grid.innerHTML = '<div style="color:var(--text-secondary);font-size:0.85rem;grid-column:1/-1;text-align:center;padding:40px;">No sessions yet.</div>';
+    return;
+  }
+  grid.innerHTML = allSessions.slice().reverse().map(s => {
+    const isActive = s.id === currentSessionId;
+    const evals = s.evaluations.length;
+    const accurate = s.evaluations.filter(e => e.accuracy === 'Accurate').length;
+    const accPct = evals > 0 ? Math.round(accurate / evals * 100) : null;
+    const flawed = evals - accurate;
+    const created = new Date(s.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+    return `<div class="session-card${isActive ? ' session-card-active' : ''}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px;">
+        <div style="flex:1;">
+          <div class="session-card-name">${escapeHtml(s.name)}</div>
+          <div class="session-card-meta">${created}</div>
+        </div>
+        ${isActive ? '<span style="font-size:0.65rem;font-weight:700;padding:3px 8px;background:rgba(99,102,241,0.2);color:var(--accent);border-radius:20px;border:1px solid rgba(99,102,241,0.4);white-space:nowrap;">Active</span>' : ''}
+      </div>
+      <div style="display:flex;gap:16px;padding:12px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:14px;">
+        <div><div class="session-stat-val" style="color:var(--accent);">${evals}</div><div class="session-stat-lbl">Evaluations</div></div>
+        <div><div class="session-stat-val" style="color:var(--green);">${accPct !== null ? accPct + '%' : '—'}</div><div class="session-stat-lbl">Accuracy</div></div>
+        <div><div class="session-stat-val" style="color:var(--red);">${flawed}</div><div class="session-stat-lbl">Flawed</div></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-primary" onclick="loadSession('${s.id}')" style="flex:1;padding:8px 12px;font-size:0.8rem;">${isActive ? '✓ Active' : 'Load'}</button>
+        <button class="btn-danger" onclick="deleteSession('${s.id}')" style="padding:8px 12px;font-size:0.8rem;">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+  updateSessionIndicator();
 }
 
 // ─── TOAST ────────────────────────────────────────────────────────────────────
