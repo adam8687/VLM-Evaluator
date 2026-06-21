@@ -22,6 +22,10 @@
     --red: #f45b7a;
     --yellow: #f5c542;
     --blue: #38bdf8;
+    
+    /* Animation Easing Curves */
+    --ease-fluid: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.05);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -36,6 +40,16 @@
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
+  /* Keyframe Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.96) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
   /* Metric cards */
   .metric-card {
     background: var(--surface-2);
@@ -44,11 +58,12 @@
     padding: 18px 22px;
     position: relative;
     overflow: hidden;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: transform 0.4s var(--ease-fluid), border-color 0.4s var(--ease-fluid), box-shadow 0.4s var(--ease-fluid);
   }
   .metric-card:hover {
     border-color: var(--accent);
-    box-shadow: 0 0 18px var(--accent-glow);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.4), 0 0 18px var(--accent-glow);
+    transform: translateY(-3px);
   }
   .metric-card::before {
     content: '';
@@ -94,7 +109,7 @@
   }
 
   /* Form elements */
-  input[type="text"], input[type="number"], textarea, select {
+  input[type="text"], input[type="number"], input[type="password"], textarea, select {
     width: 100%;
     background: var(--surface-3);
     border: 1px solid var(--border);
@@ -104,14 +119,14 @@
     font-size: 0.875rem;
     font-family: inherit;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.3s var(--ease-fluid), box-shadow 0.3s var(--ease-fluid);
   }
-  input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+  input[type="text"]:focus, input[type="number"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-glow);
   }
   select option { background: var(--surface-3); }
-  label { font-size: 0.78rem; color: var(--text-secondary); font-weight: 500; display: block; margin-bottom: 5px; }
+  label { font-size: 0.78rem; color: var(--text-secondary); font-weight: 500; display: block; margin-bottom: 5px; transition: color 0.3s var(--ease-fluid); }
 
   /* Video upload zone */
   #drop-zone {
@@ -120,13 +135,14 @@
     padding: 28px 16px;
     text-align: center;
     cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
     background: var(--surface-3);
     position: relative;
+    transition: border-color 0.4s var(--ease-fluid), background 0.4s var(--ease-fluid), transform 0.4s var(--ease-spring);
   }
   #drop-zone:hover, #drop-zone.drag-over {
     border-color: var(--accent);
     background: rgba(36,126,199,0.07);
+    transform: scale(1.01);
   }
   #drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
   #video-player {
@@ -136,6 +152,7 @@
     max-height: 220px;
     display: none;
     border: 1px solid var(--border);
+    animation: fadeInUp 0.5s var(--ease-fluid) forwards;
   }
 
   /* Radio/Toggle groups */
@@ -152,13 +169,14 @@
     font-weight: 500;
     cursor: pointer;
     text-align: center;
-    transition: all 0.15s;
+    transition: all 0.25s var(--ease-fluid);
     user-select: none;
   }
-  .radio-btn:hover { border-color: var(--accent); color: var(--text-primary); }
-  .radio-btn.selected-success { border-color: var(--green); background: rgba(34,211,162,0.12); color: var(--green); }
-  .radio-btn.selected-failure { border-color: var(--red); background: rgba(244,91,122,0.12); color: var(--red); }
-  .radio-btn.selected-truncated { border-color: var(--yellow); background: rgba(245,197,66,0.12); color: var(--yellow); }
+  .radio-btn:hover { border-color: var(--accent); color: var(--text-primary); transform: translateY(-1px); }
+  .radio-btn:active { transform: scale(0.97); }
+  .radio-btn.selected-success { border-color: var(--green); background: rgba(34,211,162,0.12); color: var(--green); transform: translateY(0); }
+  .radio-btn.selected-failure { border-color: var(--red); background: rgba(244,91,122,0.12); color: var(--red); transform: translateY(0); }
+  .radio-btn.selected-truncated { border-color: var(--yellow); background: rgba(245,197,66,0.12); color: var(--yellow); transform: translateY(0); }
 
   /* Accuracy toggle */
   #accuracy-toggle {
@@ -177,20 +195,24 @@
     font-weight: 600;
     cursor: pointer;
     text-align: center;
-    transition: all 0.15s;
+    transition: all 0.3s var(--ease-fluid);
     letter-spacing: 0.02em;
   }
+  .acc-btn:hover { transform: translateY(-1px); }
+  .acc-btn:active { transform: scale(0.97); }
   .acc-btn.acc-accurate {
     border-color: var(--green);
     background: rgba(34,211,162,0.12);
     color: var(--green);
-    box-shadow: 0 0 12px rgba(34,211,162,0.2);
+    box-shadow: 0 4px 14px rgba(34,211,162,0.15);
+    transform: translateY(0);
   }
   .acc-btn.acc-flawed {
     border-color: var(--red);
     background: rgba(244,91,122,0.12);
     color: var(--red);
-    box-shadow: 0 0 12px rgba(244,91,122,0.2);
+    box-shadow: 0 4px 14px rgba(244,91,122,0.15);
+    transform: translateY(0);
   }
 
   /* Checkboxes */
@@ -204,14 +226,15 @@
     border-radius: 8px;
     border: 1px solid transparent;
     background: var(--surface-3);
-    transition: border-color 0.15s;
+    transition: all 0.25s var(--ease-fluid);
     font-size: 0.82rem;
     color: var(--text-secondary);
     user-select: none;
   }
-  .checkbox-item:hover { border-color: var(--border); color: var(--text-primary); }
-  .checkbox-item.checked { border-color: var(--red); color: var(--red); background: rgba(244,91,122,0.07); }
-  .checkbox-item input { width: 15px; height: 15px; accent-color: var(--accent); }
+  .checkbox-item:hover { border-color: var(--border); color: var(--text-primary); transform: translateX(2px); }
+  .checkbox-item.checked { border-color: var(--red); color: var(--red); background: rgba(244,91,122,0.07); transform: translateX(0); }
+  .checkbox-item input { width: 15px; height: 15px; accent-color: var(--accent); transition: transform 0.2s; }
+  .checkbox-item input:active { transform: scale(0.85); }
 
   /* Buttons */
   .btn-primary {
@@ -223,12 +246,13 @@
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+    transition: opacity 0.3s, transform 0.2s var(--ease-fluid), box-shadow 0.3s var(--ease-fluid);
     box-shadow: 0 4px 14px rgba(36,126,199,0.35);
     letter-spacing: 0.02em;
   }
   .btn-primary:hover { opacity: 0.9; box-shadow: 0 6px 20px rgba(36,126,199,0.5); transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:active { transform: scale(0.96); box-shadow: 0 2px 8px rgba(36,126,199,0.3); }
+  
   .btn-secondary {
     background: var(--surface-3);
     border: 1px solid var(--border);
@@ -238,9 +262,11 @@
     font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+    transition: all 0.25s var(--ease-fluid);
   }
-  .btn-secondary:hover { border-color: var(--accent); background: rgba(36,126,199,0.08); }
+  .btn-secondary:hover { border-color: var(--accent); background: rgba(36,126,199,0.08); transform: translateY(-1px); }
+  .btn-secondary:active { transform: scale(0.96); }
+  
   .btn-danger {
     background: rgba(244,91,122,0.1);
     border: 1px solid var(--red);
@@ -250,9 +276,10 @@
     font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: all 0.25s var(--ease-fluid);
   }
-  .btn-danger:hover { background: rgba(244,91,122,0.2); }
+  .btn-danger:hover { background: rgba(244,91,122,0.2); transform: translateY(-1px); }
+  .btn-danger:active { transform: scale(0.95); }
 
   /* Table */
   .data-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
@@ -270,9 +297,11 @@
     border-bottom: 1px solid rgba(42,51,72,0.5);
     color: var(--text-primary);
     vertical-align: middle;
+    transition: background 0.2s var(--ease-fluid);
   }
   .data-table tr:last-child td { border-bottom: none; }
-  .data-table tr:hover td { background: rgba(36,126,199,0.04); }
+  .data-table tr:hover td { background: rgba(36,126,199,0.06); }
+  
   .badge {
     display: inline-block;
     padding: 3px 9px;
@@ -298,6 +327,7 @@
     color: var(--text-secondary);
     line-height: 1.6;
     margin-bottom: 8px;
+    animation: popIn 0.4s var(--ease-fluid) forwards;
   }
   .insight-card .insight-label {
     font-weight: 700;
@@ -310,7 +340,7 @@
   .error-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.78rem; }
   .error-bar-label { width: 160px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .error-bar-track { flex: 1; height: 6px; background: var(--surface-4); border-radius: 3px; overflow: hidden; }
-  .error-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), #f472b6); border-radius: 3px; transition: width 0.4s ease; }
+  .error-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), #f472b6); border-radius: 3px; transition: width 0.8s var(--ease-spring); }
   .error-bar-count { width: 28px; text-align: right; color: var(--text-primary); font-weight: 600; }
 
   /* Notification toast */
@@ -323,18 +353,37 @@
     padding: 13px 20px;
     font-size: 0.85rem;
     color: var(--text-primary);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     z-index: 9999;
-    transform: translateY(80px);
+    transform: translateY(80px) scale(0.95);
     opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.4s var(--ease-spring), opacity 0.3s ease;
     max-width: 320px;
   }
-  #toast.show { transform: translateY(0); opacity: 1; }
+  #toast.show { transform: translateY(0) scale(1); opacity: 1; }
+
+  /* Compare Modal */
+  #compare-modal {
+    position: fixed; inset: 0; background: rgba(15,17,23,0.85); backdrop-filter: blur(5px);
+    z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px;
+    transition: opacity 0.3s ease;
+  }
+  .modal-content {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px;
+    width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; padding: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    animation: popIn 0.4s var(--ease-fluid) forwards;
+  }
+  .compare-grid { display: grid; grid-template-columns: 1fr 1.5fr 1.5fr; gap: 16px; margin-top: 16px; }
+  .comp-col { background: var(--surface-3); padding: 16px; border-radius: 10px; border: 1px solid var(--border); }
+  .comp-header { font-size: 1.1rem; font-weight: 700; color: var(--accent); margin-bottom: 12px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 8px;}
+  .comp-stat { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.85rem; }
+  .comp-stat-val { font-weight: 700; color: var(--text-primary); }
 
   /* Accuracy ring */
   .ring-container { position: relative; width: 56px; height: 56px; }
   .ring-container svg { transform: rotate(-90deg); }
+  #acc-ring { transition: stroke-dashoffset 1s var(--ease-spring), stroke 0.5s ease; }
   .ring-text {
     position: absolute;
     inset: 0;
@@ -359,7 +408,7 @@
     height: 100%;
     background: linear-gradient(90deg, var(--green), #34d399);
     border-radius: 2px;
-    transition: width 0.4s ease;
+    transition: width 1s var(--ease-spring), background 0.5s ease;
   }
 
   /* Divider line */
@@ -369,7 +418,7 @@
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .spin { display: inline-block; animation: spin 0.7s linear infinite; }
   #run-model-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-  .api-provider-badge { font-size: 0.67rem; padding: 2px 9px; border-radius: 20px; font-weight: 700; letter-spacing: 0.05em; }
+  .api-provider-badge { font-size: 0.67rem; padding: 2px 9px; border-radius: 20px; font-weight: 700; letter-spacing: 0.05em; transition: all 0.3s ease; }
   .provider-openai { background: rgba(16,163,127,0.15); color: #10a37f; border: 1px solid rgba(16,163,127,0.35); }
   .provider-gemini { background: rgba(66,133,244,0.15); color: #4285f4; border: 1px solid rgba(66,133,244,0.35); }
   .provider-github { background: rgba(240,246,252,0.1); color: #c9d1d9; border: 1px solid rgba(240,246,252,0.2); }
@@ -420,15 +469,6 @@
     z-index: 9999;
   }
 
-  /* Textarea monospace */
-  #model-output {
-    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
-    font-size: 0.78rem;
-    line-height: 1.6;
-    resize: vertical;
-    min-height: 140px;
-  }
-
   /* Animation */
   @keyframes pulse-dot {
     0%, 100% { opacity: 1; }
@@ -456,10 +496,11 @@
     border-radius: 12px;
     padding: 20px;
     cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: transform 0.4s var(--ease-fluid), border-color 0.4s var(--ease-fluid), box-shadow 0.4s var(--ease-fluid);
     position: relative;
+    animation: fadeInUp 0.4s var(--ease-fluid) forwards;
   }
-  .session-card:hover { border-color: var(--accent); box-shadow: 0 0 16px var(--accent-glow); }
+  .session-card:hover { border-color: var(--accent); box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 16px var(--accent-glow); transform: translateY(-3px); }
   .session-card-active { border-color: var(--accent); background: rgba(36,126,199,0.06); }
   .session-card-active::before {
     content: '';
@@ -469,7 +510,7 @@
     background: linear-gradient(90deg, var(--accent), transparent);
     border-radius: 12px 12px 0 0;
   }
-  .session-card-name { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+  .session-card-name { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; transition: color 0.3s ease; }
   .session-card-meta { font-size: 0.72rem; color: var(--text-secondary); }
   .session-stat-val { font-size: 1.4rem; font-weight: 700; line-height: 1; }
   .session-stat-lbl { font-size: 0.68rem; color: var(--text-secondary); margin-top: 3px; }
@@ -483,6 +524,7 @@
     font-family: inherit;
     cursor: text;
     width: 160px;
+    transition: border-color 0.3s ease;
   }
   .session-name-input:focus { border-bottom: 1px solid var(--accent); }
 
@@ -502,7 +544,7 @@
     font-size: 0.83rem;
     font-weight: 600;
     cursor: pointer;
-    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    transition: color 0.3s var(--ease-fluid), background 0.3s var(--ease-fluid), border-color 0.3s var(--ease-fluid);
     font-family: inherit;
     margin-bottom: -1px;
     border-radius: 8px 8px 0 0;
@@ -513,8 +555,14 @@
   }
   .tab-btn:hover { color: var(--text-primary); background: rgba(36,126,199,0.07); }
   .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(36,126,199,0.09); }
+  
   .tab-pane { display: none; }
-  .tab-pane.active { display: block; }
+  /* Slide & Fade for Tabs */
+  .tab-pane.active { 
+    display: block; 
+    animation: fadeInUp 0.4s var(--ease-fluid) forwards;
+  }
+  
   .tab-badge {
     display: inline-flex;
     align-items: center;
@@ -527,14 +575,13 @@
     font-size: 0.65rem;
     font-weight: 700;
     color: var(--text-secondary);
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.3s var(--ease-fluid), color 0.3s var(--ease-fluid);
   }
   .tab-btn.active .tab-badge { background: rgba(36,126,199,0.3); color: var(--accent); }
 </style>
 </head>
 <body>
 
-<!-- HEADER BAR -->
 <div class="header-bar">
   <div>
     <div class="logo-text">⬡ VLM Eval</div>
@@ -547,7 +594,6 @@
       <span id="session-eval-count" style="font-size:0.68rem;color:var(--text-secondary);"></span>
     </div>
     
-    <!-- Hidden file input for JSON import -->
     <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importJSON(event)" />
     
     <button class="btn-secondary" onclick="document.getElementById('import-file').click()" style="padding:8px 14px;font-size:0.8rem;">⬆ Import JSON</button>
@@ -557,10 +603,8 @@
   </div>
 </div>
 
-<!-- MAIN CONTENT -->
 <div style="padding: 20px 24px; max-width: 1600px; margin: 0 auto;">
 
-  <!-- TOP METRIC BAR -->
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px;" id="metric-bar">
 
     <div class="metric-card">
@@ -624,7 +668,6 @@
 
   </div>
 
-  <!-- TAB BAR -->
   <div class="tab-bar">
     <button class="tab-btn active" data-tab="evaluate" onclick="switchTab('evaluate')">▶ Evaluate</button>
     <button class="tab-btn" data-tab="log" onclick="switchTab('log')">📊 Log <span class="tab-badge" id="tab-log-badge">0</span></button>
@@ -632,33 +675,34 @@
     <button class="tab-btn" data-tab="sessions" onclick="switchTab('sessions')">🗂 Sessions <span class="tab-badge" id="tab-sessions-badge">1</span></button>
   </div>
 
-  <!-- TAB: EVALUATE -->
   <div class="tab-pane active" id="tab-evaluate">
-  <!-- MAIN TWO-COLUMN LAYOUT -->
   <div style="display:grid;grid-template-columns:minmax(320px,420px) 1fr;gap:16px;margin-bottom:0;align-items:start;">
 
-    <!-- LEFT PANEL: MEDIA & EXECUTION -->
     <div style="display:flex;flex-direction:column;gap:14px;">
 
       <div class="panel">
         <div class="panel-title">📁 Media Upload</div>
-
-        <!-- Drop zone -->
         <div id="drop-zone" onclick="document.getElementById('file-input').click()">
           <input type="file" id="file-input" accept="video/mp4,video/*" onchange="handleFileUpload(event)"/>
           <div id="drop-icon" style="font-size:2rem;margin-bottom:8px;">🎬</div>
           <div id="drop-label" style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">Drop MP4 here or click to browse</div>
           <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:4px;">Supports MP4, WebM, MOV</div>
         </div>
-
-        <!-- Video player -->
         <video id="video-player" controls preload="metadata" style="margin-top:12px;"></video>
+        
+        <div id="video-playback-controls" style="display:none; justify-content:flex-end; margin-top:8px;">
+          <select onchange="document.getElementById('video-player').playbackRate = this.value" style="width:auto; padding:4px 8px; font-size:0.75rem; background:var(--surface-4); border:none; border-radius:4px; color:var(--text-secondary);">
+            <option value="0.5">0.5x Playback</option>
+            <option value="1" selected>1x Playback</option>
+            <option value="2">2x Playback</option>
+            <option value="4">4x Playback</option>
+          </select>
+        </div>
 
-        <!-- Filename display -->
-        <div id="filename-display" style="display:none;margin-top:10px;padding:7px 10px 7px 12px;background:var(--surface-3);border:1px solid var(--border);border-radius:7px;font-size:0.78rem;color:var(--text-secondary);word-break:break-all;display:none;align-items:center;gap:8px;">
+        <div id="filename-display" style="display:none;margin-top:10px;padding:7px 10px 7px 12px;background:var(--surface-3);border:1px solid var(--border);border-radius:7px;font-size:0.78rem;color:var(--text-secondary);word-break:break-all;align-items:center;gap:8px;">
           <span style="color:var(--accent);font-weight:600;flex-shrink:0;">📄</span>
           <span id="filename-text" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-          <button onclick="clearVideoUpload()" title="Remove video" style="flex-shrink:0;background:transparent;border:none;cursor:pointer;color:var(--text-secondary);font-size:1rem;padding:2px 4px;border-radius:4px;line-height:1;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-secondary)'">✕</button>
+          <button onclick="clearVideoUpload()" title="Remove video" style="flex-shrink:0;background:transparent;border:none;cursor:pointer;color:var(--text-secondary);font-size:1rem;padding:2px 4px;border-radius:4px;line-height:1;transition:color 0.2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-secondary)'">✕</button>
         </div>
       </div>
 
@@ -714,18 +758,16 @@
 
     </div>
 
-    <!-- RIGHT PANEL: EVALUATION WORKBENCH -->
     <div class="panel" style="display:flex;flex-direction:column;gap:0;">
       <div class="panel-title">🔬 Evaluation Workbench</div>
 
-      <!-- Run bar -->
       <div style="display:flex;gap:10px;align-items:flex-end;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--border);">
         <div style="flex:1;">
           <label style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
             <span>Prompt</span>
             <span style="font-size:0.65rem;color:var(--text-secondary);">same as configured left</span>
           </label>
-          <div style="font-size:0.78rem;color:var(--text-secondary);background:var(--surface-3);border:1px solid var(--border);border-radius:8px;padding:9px 13px;min-height:38px;" id="prompt-preview">
+          <div style="font-size:0.78rem;color:var(--text-secondary);background:var(--surface-3);border:1px solid var(--border);border-radius:8px;padding:9px 13px;min-height:38px; transition:border-color 0.3s ease;" id="prompt-preview">
             <em style="color:var(--surface-4);">Enter a prompt in the left panel…</em>
           </div>
         </div>
@@ -734,7 +776,12 @@
             <span>Frames</span>
           </label>
           <div style="display:flex;gap:8px;align-items:center;">
-            <input type="number" id="frame-count" value="8" min="1" max="24" style="width:68px;" />
+            <select id="fps-select" style="width:auto; padding:9px;" onchange="updateFrameCalc()" title="Extraction Density">
+              <option value="1">1 fps (Standard)</option>
+              <option value="0.5">0.5 fps (Half frames)</option>
+              <option value="2">2 fps (Double frames)</option>
+            </select>
+            <input type="number" id="frame-count" value="8" min="1" max="200" style="width:68px;" title="Total Frames" />
             <button class="btn-primary" id="run-model-btn" onclick="runModel()" style="padding:10px 22px;font-size:0.95rem;white-space:nowrap;">
               ▶ Run Model
             </button>
@@ -744,16 +791,14 @@
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
 
-        <!-- Model Output -->
         <div style="grid-column:1/-1;">
           <label style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
             <span>Model Output</span>
-            <span id="output-status" style="font-size:0.7rem;color:var(--text-secondary);">awaiting run…</span>
+            <span id="output-status" style="font-size:0.7rem;color:var(--text-secondary); transition:color 0.3s ease;">awaiting run…</span>
           </label>
           <textarea id="model-output" rows="8" placeholder="Paste ChatGPT (or any model) output here — prediction, verdict &amp; error tags will auto-fill…" oninput="analyzeModelOutput(this.value)" onpaste="setTimeout(()=>analyzeModelOutput(this.value),0)"></textarea>
         </div>
 
-        <!-- Ground Truth -->
         <div>
           <label>Ground Truth Label</label>
           <div class="radio-group" id="gt-group">
@@ -762,7 +807,6 @@
           </div>
         </div>
 
-        <!-- Model Prediction -->
         <div>
           <label>Model Prediction</label>
           <div class="radio-group" id="pred-group">
@@ -772,7 +816,6 @@
           </div>
         </div>
 
-        <!-- Final Accuracy Verdict -->
         <div style="grid-column:1/-1;">
           <label>Final Accuracy Verdict</label>
           <div id="accuracy-toggle">
@@ -781,7 +824,6 @@
           </div>
         </div>
 
-        <!-- Error Mode Tagging (shown when Flawed) -->
         <div style="grid-column:1/-1;" id="error-mode-section">
           <label style="margin-bottom:8px;">Error Mode Tags <span style="color:var(--red);font-size:0.7rem;">(tag root cause if flawed)</span></label>
           <div class="checkbox-group" id="error-checkboxes">
@@ -812,13 +854,11 @@
           </div>
         </div>
 
-        <!-- Notes -->
         <div style="grid-column:1/-1;">
           <label>Reviewer Notes <span style="color:var(--text-secondary);font-size:0.7rem;">(optional)</span></label>
           <textarea id="reviewer-notes" rows="2" style="resize:vertical;" placeholder="Add any additional observations…"></textarea>
         </div>
 
-        <!-- Submit -->
         <div style="grid-column:1/-1;display:flex;gap:10px;justify-content:flex-end;margin-top:4px;">
           <button class="btn-secondary" onclick="resetForm()">Reset Form</button>
           <button class="btn-primary" onclick="submitEvaluation()">＋ Log Evaluation</button>
@@ -827,10 +867,7 @@
       </div>
     </div>
   </div>
-  </div><!-- /tab-evaluate -->
-
-  <!-- TAB: LOG -->
-  <div class="tab-pane" id="tab-log">
+  </div><div class="tab-pane" id="tab-log">
     <div class="panel">
       <div class="panel-title" style="justify-content:space-between;">
         <span>📊 Evaluation Log</span>
@@ -862,10 +899,7 @@
         </table>
       </div>
     </div>
-  </div><!-- /tab-log -->
-
-  <!-- TAB: INSIGHTS -->
-  <div class="tab-pane" id="tab-insights">
+  </div><div class="tab-pane" id="tab-insights">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
 
       <div class="panel">
@@ -885,25 +919,28 @@
       </div>
 
     </div>
-  </div><!-- /tab-insights -->
-
-  <!-- TAB: SESSIONS -->
-  <div class="tab-pane" id="tab-sessions">
+  </div><div class="tab-pane" id="tab-sessions">
     <div id="sessions-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;">
-      <!-- rendered by renderSessionsTab() -->
-    </div>
-  </div><!-- /tab-sessions -->
+      </div>
+  </div></div>
 
+<div id="compare-modal" onclick="if(event.target===this) closeCompareModal()">
+  <div class="modal-content">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
+      <h2 style="font-size: 1.2rem; font-weight: 700;">📊 Side-by-Side Model Comparison</h2>
+      <button class="btn-secondary" onclick="closeCompareModal()" style="padding: 6px 12px;">✕ Close</button>
+    </div>
+    <div id="compare-modal-body"></div>
+  </div>
 </div>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
 <script>
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let allSessions = [];
 let currentSessionId = null;
-let evaluations = []; // always mirrors getCurrentSession().evaluations
+let evaluations = []; 
 let currentAccuracy = null;
 let groundTruth = null;
 let modelPrediction = null;
@@ -928,7 +965,7 @@ function init() {
   renderSessionsTab();
 }
 
-// ─── FILE UPLOAD ──────────────────────────────────────────────────────────────
+// ─── FILE UPLOAD & FRAMES ─────────────────────────────────────────────────────
 const dropZone = document.getElementById('drop-zone');
 
 dropZone.addEventListener('dragover', (e) => {
@@ -948,26 +985,36 @@ function handleFileUpload(event) {
   if (file) loadVideoFile(file);
 }
 
+function updateFrameCalc() {
+  const player = document.getElementById('video-player');
+  if (!player.duration || isNaN(player.duration)) return;
+  
+  const durationInSeconds = player.duration;
+  const fpsMultiplier = parseFloat(document.getElementById('fps-select').value) || 1;
+  const optimalFrames = Math.max(4, Math.min(Math.ceil(durationInSeconds * fpsMultiplier), 200));
+  
+  document.getElementById('frame-count').value = optimalFrames;
+}
+
 function loadVideoFile(file) {
   if (currentVideoURL) URL.revokeObjectURL(currentVideoURL);
   currentVideoURL = URL.createObjectURL(file);
   const player = document.getElementById('video-player');
   
-  // 1. ATTACH THE LISTENER FIRST (Fixes the race condition)
   player.onloadedmetadata = function() {
-    const durationInSeconds = player.duration;
-    
-    // Rule: 1 frame per second. Minimum 4 frames. Maximum 60 frames.
-    const optimalFrames = Math.max(4, Math.min(Math.ceil(durationInSeconds), 60));
-    
-    const frameInput = document.getElementById('frame-count');
-    frameInput.value = optimalFrames;
-    showToast(`Video loaded: ${Math.round(durationInSeconds)}s. Frame count auto-set to ${optimalFrames}.`, 'info');
+    updateFrameCalc();
+    showToast(`Video loaded. Frame count auto-calculated.`, 'info');
   };
 
-  // 2. THEN LOAD THE VIDEO
+  player.onerror = function() {
+    showToast('⚠ Error: Your web browser cannot read this video format or codec. Try converting to H.264/MP4.', 'warn');
+  };
+
   player.src = currentVideoURL;
   player.style.display = 'block';
+  
+  const playControls = document.getElementById('video-playback-controls');
+  if (playControls) playControls.style.display = 'flex';
 
   document.getElementById('drop-icon').textContent = '✅';
   document.getElementById('drop-label').textContent = file.name;
@@ -986,6 +1033,8 @@ function clearVideoUpload() {
   player.removeAttribute('src');
   player.load();
   player.style.display = 'none';
+  const playControls = document.getElementById('video-playback-controls');
+  if (playControls) playControls.style.display = 'none';
   if (currentVideoURL) { URL.revokeObjectURL(currentVideoURL); currentVideoURL = null; }
   document.getElementById('drop-icon').textContent = '🎦';
   document.getElementById('drop-label').textContent = 'Drop MP4 here or click to browse';
@@ -1009,7 +1058,6 @@ function inferPredictionFromOutput(output) {
   if (!text) return null;
   if (text.startsWith('[error]') || /\b(truncated|cut off|incomplete response|max token)\b/.test(text)) return 'Truncated';
 
-  // Structured output fields (final_status: success / failure)
   const statusMatch = text.match(/final[_\s-]?status[:\s]+([a-z-]+)/);
   if (statusMatch) {
     const s = statusMatch[1];
@@ -1022,7 +1070,7 @@ function inferPredictionFromOutput(output) {
 
   if (hasSuccess && !hasFailure) return 'Success';
   if (hasFailure && !hasSuccess) return 'Failure';
-  if (hasSuccess && hasFailure) return 'Failure'; // mixed signals → lean failure
+  if (hasSuccess && hasFailure) return 'Failure'; 
   return null;
 }
 
@@ -1071,7 +1119,6 @@ function applyPredictionFromOutput(outputText) {
 
 function applyErrorTagsFromOutput(outputText) {
   const tags = inferErrorTagsFromOutput(outputText);
-  // Only auto-tag if verdict is Flawed (or not yet set)
   if (currentAccuracy === 'Accurate') return;
   document.querySelectorAll('#error-checkboxes input[type="checkbox"]').forEach(cb => {
     const shouldCheck = tags.includes(cb.value);
@@ -1086,7 +1133,6 @@ function analyzeModelOutput(text) {
   if (!text.trim()) return;
   applyPredictionFromOutput(text);
   applyErrorTagsFromOutput(text);
-  // Update output status
   const status = document.getElementById('output-status');
   if (status && status.textContent.includes('awaiting')) {
     status.textContent = 'pasted';
@@ -1094,7 +1140,7 @@ function analyzeModelOutput(text) {
   }
 }
 
-// ─── RADIO SELECTION ──────────────────────────────────────────────────────────
+// ─── UI CONTROLS ──────────────────────────────────────────────────────────────
 function selectRadio(el, group) {
   document.querySelectorAll(`[data-group="${group}"]`).forEach(btn => {
     btn.className = 'radio-btn';
@@ -1110,21 +1156,18 @@ function selectRadio(el, group) {
   autoSetAccuracyFromLabels();
 }
 
-// ─── ACCURACY TOGGLE ─────────────────────────────────────────────────────────
 function setAccuracy(val) {
   currentAccuracy = val;
   document.getElementById('btn-accurate').className = 'acc-btn' + (val === 'Accurate' ? ' acc-accurate' : '');
   document.getElementById('btn-flawed').className = 'acc-btn' + (val === 'Flawed' ? ' acc-flawed' : '');
 }
 
-// ─── CHECKBOX STYLE ───────────────────────────────────────────────────────────
 function toggleCheckStyle(input) {
   const label = input.closest('label');
   if (input.checked) label.classList.add('checked');
   else label.classList.remove('checked');
 }
 
-// ─── SUBMIT EVALUATION ────────────────────────────────────────────────────────
 function submitEvaluation() {
   const videoId = document.getElementById('video-id').value.trim();
   const modelName = document.getElementById('model-select').value.trim();
@@ -1138,7 +1181,6 @@ function submitEvaluation() {
   if (!modelPrediction) { showToast('⚠ Please select a Model Prediction.', 'warn'); return; }
   if (!currentAccuracy) { showToast('⚠ Please set the Final Accuracy Verdict.', 'warn'); return; }
 
-  // Collect error tags
   const errorTags = [];
   document.querySelectorAll('#error-checkboxes input[type="checkbox"]:checked').forEach(cb => {
     errorTags.push(cb.value);
@@ -1166,11 +1208,10 @@ function submitEvaluation() {
   renderTable();
   updateMetrics();
   renderInsights();
-  showToast(`✓ Evaluation #${entry.seq} logged. Switch to Log or Insights tab to review.`, 'ok');
+  showToast(`✓ Evaluation #${entry.seq} logged.`, 'ok');
   resetForm();
 }
 
-// ─── RESET FORM ───────────────────────────────────────────────────────────────
 function resetForm() {
   document.getElementById('video-id').value = '';
   document.getElementById('model-output').value = '';
@@ -1178,7 +1219,6 @@ function resetForm() {
   const status = document.getElementById('output-status');
   status.textContent = 'awaiting run…';
   status.style.color = '';
-  // Keep model name and prompt for batch convenience, allow manual clearing
   currentAccuracy = null;
   groundTruth = null;
   modelPrediction = null;
@@ -1191,7 +1231,6 @@ function resetForm() {
   });
 }
 
-// ─── RENAME VIDEO ID ──────────────────────────────────────────────────────────
 function renameVideoId(el) {
   const id = parseInt(el.dataset.id);
   const newName = el.textContent.trim();
@@ -1203,10 +1242,8 @@ function renameVideoId(el) {
   saveAllSessions();
 }
 
-// ─── DELETE ENTRY ─────────────────────────────────────────────────────────────
 function deleteEntry(id) {
   evaluations = evaluations.filter(e => e.id !== id);
-  // Resequence
   evaluations.forEach((e, i) => e.seq = i + 1);
   getCurrentSession().evaluations = evaluations;
   saveAllSessions();
@@ -1217,7 +1254,7 @@ function deleteEntry(id) {
   showToast('Entry deleted.', 'info');
 }
 
-// ─── RENDER TABLE ─────────────────────────────────────────────────────────────
+// ─── RENDERERS ────────────────────────────────────────────────────────────────
 function renderTable() {
   const tbody = document.getElementById('log-tbody');
   document.getElementById('log-count').textContent = `${evaluations.length} entr${evaluations.length === 1 ? 'y' : 'ies'}`;
@@ -1238,8 +1275,7 @@ function renderTable() {
       ? e.errorTags.map(t => `<span style="font-size:0.65rem;background:rgba(244,91,122,0.12);border:1px solid rgba(244,91,122,0.3);color:var(--red);border-radius:4px;padding:1px 6px;margin-right:3px;white-space:nowrap;">${t}</span>`).join('')
       : '<span style="color:var(--text-secondary);font-size:0.72rem;">—</span>';
     const modelShort = e.modelName.length > 16 ? e.modelName.slice(0, 14) + '…' : e.modelName;
-    const vidShort = e.videoId.length > 18 ? e.videoId.slice(0, 16) + '…' : e.videoId;
-
+    
     return `<tr class="${isNew ? 'row-new' : ''}">
       <td style="color:var(--text-secondary);">${e.seq}</td>
       <td>
@@ -1250,8 +1286,8 @@ function renderTable() {
           data-id="${e.id}"
           onblur="renameVideoId(this)"
           onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
-          style="display:inline-block;font-weight:600;color:var(--accent);outline:none;border-bottom:1px dashed transparent;border-radius:2px;padding:1px 3px;cursor:text;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
-          onfocus="this.style.borderBottomColor='var(--accent)';this.style.background='rgba(99,102,241,0.08)'"
+          style="display:inline-block;font-weight:600;color:var(--accent);outline:none;border-bottom:1px dashed transparent;border-radius:2px;padding:1px 3px;cursor:text;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:all 0.2s ease;"
+          onfocus="this.style.borderBottomColor='var(--accent)';this.style.background='rgba(36,126,199,0.08)'"
           onfocusout="this.style.borderBottomColor='transparent';this.style.background=''"
         >${escapeHtml(e.videoId)}</span>
       </td>
@@ -1267,14 +1303,12 @@ function renderTable() {
   }).join('');
 }
 
-// ─── UPDATE METRICS ───────────────────────────────────────────────────────────
 function updateMetrics() {
   const total = evaluations.length;
   const accurate = evaluations.filter(e => e.accuracy === 'Accurate').length;
   const flawed = evaluations.filter(e => e.accuracy === 'Flawed').length;
   const truncated = evaluations.filter(e => e.modelPrediction === 'Truncated').length;
 
-  // TP: GT=Success, Pred=Success (or Accurate on Success)
   let tp = 0, tn = 0, fp = 0, fn = 0;
   evaluations.forEach(e => {
     const gt = e.groundTruth;
@@ -1298,19 +1332,16 @@ function updateMetrics() {
   document.getElementById('m-flawed').textContent = flawed;
   document.getElementById('m-truncated').textContent = truncated;
 
-  // Ring
   const offset = accPct !== null ? circumference - (circumference * accPct / 100) : circumference;
   document.getElementById('acc-ring').style.strokeDashoffset = offset;
   document.getElementById('acc-ring-text').textContent = accPct !== null ? `${accPct}%` : '0%';
   document.getElementById('acc-progress').style.width = (accPct || 0) + '%';
 
-  // Color the ring by score
   const ringColor = accPct === null ? 'var(--green)' : accPct >= 70 ? 'var(--green)' : accPct >= 40 ? 'var(--yellow)' : 'var(--red)';
   document.getElementById('acc-ring').style.stroke = ringColor;
   document.getElementById('acc-progress').style.background = `linear-gradient(90deg, ${ringColor}, ${ringColor}99)`;
 }
 
-// ─── INSIGHTS ─────────────────────────────────────────────────────────────────
 function renderInsights() {
   renderErrorBars();
   renderTextInsights();
@@ -1353,7 +1384,6 @@ function renderTextInsights() {
   const accurate = total - flawed;
   const accPct = Math.round((accurate / total) * 100);
 
-  // Group by model
   const byModel = {};
   evaluations.forEach(e => {
     if (!byModel[e.modelName]) byModel[e.modelName] = { total: 0, accurate: 0, errors: {} };
@@ -1364,10 +1394,8 @@ function renderTextInsights() {
     });
   });
 
-  // Overall accuracy
   insights.push({ label: 'Overall', text: `Across ${total} evaluation${total > 1 ? 's' : ''}, overall model accuracy is <strong>${accPct}%</strong> (${accurate} accurate, ${flawed} flawed).` });
 
-  // Per-model insights
   Object.entries(byModel).forEach(([model, data]) => {
     const mAcc = Math.round((data.accurate / data.total) * 100);
     const mFlawed = data.total - data.accurate;
@@ -1382,7 +1410,6 @@ function renderTextInsights() {
     insights.push({ label: 'Model', text: txt });
   });
 
-  // Error mode insights
   const errCounts = {};
   evaluations.forEach(e => e.errorTags.forEach(t => errCounts[t] = (errCounts[t] || 0) + 1));
   const topErrors = Object.entries(errCounts).sort((a,b) => b[1]-a[1]).slice(0, 3);
@@ -1391,14 +1418,12 @@ function renderTextInsights() {
     insights.push({ label: 'Error Pattern', text: `<strong>${err}</strong> accounts for <strong>${pct}%</strong> of all flawed responses (${count} occurrence${count > 1 ? 's' : ''}).` });
   });
 
-  // Truncation rate
   const truncated = evaluations.filter(e => e.modelPrediction === 'Truncated').length;
   if (truncated > 0) {
     const tPct = Math.round((truncated / total) * 100);
     insights.push({ label: 'Truncation', text: `${tPct}% of model responses were truncated (${truncated} of ${total}). Consider increasing max token limits.` });
   }
 
-  // GT distribution
   const successVids = evaluations.filter(e => e.groundTruth === 'Success').length;
   const failureVids = evaluations.filter(e => e.groundTruth === 'Failure').length;
   if (total >= 2) {
@@ -1413,117 +1438,172 @@ function renderTextInsights() {
   `).join('');
 }
 
-// ─── JSON IMPORT ──────────────────────────────────────────────────────────────
-function importJSON(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+// ─── SESSIONS & COMPARISONS ───────────────────────────────────────────────────
+function renderSessionsTab() {
+  const grid = document.getElementById('sessions-grid');
+  if (!grid) return;
+  if (allSessions.length === 0) {
+    grid.innerHTML = '<div style="color:var(--text-secondary);font-size:0.85rem;grid-column:1/-1;text-align:center;padding:40px;">No sessions yet.</div>';
+    return;
+  }
+  grid.innerHTML = allSessions.slice().reverse().map(s => {
+    const isActive = s.id === currentSessionId;
+    const evals = s.evaluations.length;
+    const accurate = s.evaluations.filter(e => e.accuracy === 'Accurate').length;
+    const accPct = evals > 0 ? Math.round(accurate / evals * 100) : null;
+    const flawed = evals - accurate;
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
+    let tp = 0, tn = 0, fp = 0, fn = 0;
+    s.evaluations.forEach(e => {
+      const gt = e.groundTruth;
+      const pred = e.modelPrediction === 'Truncated' ? null : e.modelPrediction;
+      if (gt === 'Success' && pred === 'Success') tp++;
+      else if (gt === 'Failure' && pred === 'Failure') tn++;
+      else if (gt === 'Failure' && pred === 'Success') fp++;
+      else if (gt === 'Success' && pred === 'Failure') fn++;
+    });
+    
+    const actSucc = tp + fn;
+    const succRate = actSucc > 0 ? Math.round((tp/actSucc)*100) + '%' : 'N/A';
+    
+    const actFail = tn + fp;
+    const failRate = actFail > 0 ? Math.round((tn/actFail)*100) + '%' : 'N/A';
+
+    const created = new Date(s.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+
+    return `<div class="session-card${isActive ? ' session-card-active' : ''}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px;">
+        <div style="flex:1;">
+          <div class="session-card-name">${escapeHtml(s.name)}</div>
+          <div class="session-card-meta">${created}</div>
+        </div>
+        ${isActive ? '<span style="font-size:0.65rem;font-weight:700;padding:3px 8px;background:rgba(36,126,199,0.2);color:var(--accent);border-radius:20px;border:1px solid rgba(36,126,199,0.4);white-space:nowrap;">Active</span>' : ''}
+      </div>
       
-      // Support both the structured export format and raw array formats
-      let importedEvals = [];
-      if (Array.isArray(data)) {
-        importedEvals = data;
-      } else if (data && Array.isArray(data.evaluations)) {
-        importedEvals = data.evaluations;
-      } else {
-        throw new Error("Invalid JSON format. Expected an array of evaluations.");
-      }
+      <div style="display:flex;gap:16px;padding:12px 0;border-top:1px solid var(--border);border-bottom:1px dashed var(--border);margin-bottom:0;">
+        <div><div class="session-stat-val" style="color:var(--accent);">${evals}</div><div class="session-stat-lbl">Evaluations</div></div>
+        <div><div class="session-stat-val" style="color:var(--green);">${accPct !== null ? accPct + '%' : '—'}</div><div class="session-stat-lbl">Accuracy</div></div>
+        <div><div class="session-stat-val" style="color:var(--red);">${flawed}</div><div class="session-stat-lbl">Flawed</div></div>
+      </div>
 
-      if (importedEvals.length === 0) {
-        showToast("JSON file contains no evaluations.", "warn");
-        return;
-      }
+      <div style="display:flex;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:14px;">
+         <div><div class="session-stat-val" style="font-size:1.1rem; color:var(--blue);">${succRate}</div><div class="session-stat-lbl">Success Det.</div></div>
+         <div><div class="session-stat-val" style="font-size:1.1rem; color:var(--yellow);">${failRate}</div><div class="session-stat-lbl">Failure Det.</div></div>
+      </div>
 
-      // Re-sequence IDs just in case they were disrupted
-      importedEvals.forEach((ev, i) => ev.seq = i + 1);
+      <div style="display:flex;gap:6px;">
+        <button class="btn-primary" onclick="loadSession('${s.id}')" style="flex:1;padding:8px 12px;font-size:0.75rem;">${isActive ? '✓ Active' : 'Load'}</button>
+        ${!isActive ? `<button class="btn-secondary" onclick="openCompareModal('${s.id}')" style="flex:1;padding:8px 12px;font-size:0.75rem;" title="Compare with Active Session">⚖ Compare</button>` : `<div style="flex:1"></div>`}
+        <button class="btn-danger" onclick="deleteSession('${s.id}')" style="padding:8px 12px;font-size:0.75rem;">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+  updateSessionIndicator();
+}
 
-      // Create a brand new session for this import so we don't accidentally overwrite existing work
-      const sessionName = file.name.replace('.json', '') + ' (Imported)';
-      const s = makeSession(sessionName);
-      s.evaluations = importedEvals;
+function openCompareModal(targetSessionId) {
+  const active = getCurrentSession();
+  const target = allSessions.find(s => s.id === targetSessionId);
+  if (!target) return;
 
-      allSessions.push(s);
-      currentSessionId = s.id;
-      evaluations = s.evaluations;
+  const matches = [];
+  active.evaluations.forEach(eA => {
+    const eB = target.evaluations.find(e => e.seq === eA.seq);
+    if (eB) matches.push({ eA, eB });
+  });
 
-      // Save and refresh UI
-      saveAllSessions();
-      renderTable();
-      updateMetrics();
-      renderInsights();
-      renderSessionsTab();
-      updateSessionIndicator();
+  matches.sort((a, b) => a.eA.seq - b.eA.seq);
 
-      showToast(`✓ Successfully imported ${importedEvals.length} evaluations into a new session.`, 'ok');
-    } catch (err) {
-      showToast(`✗ Failed to import: ${err.message}`, 'warn');
-    } finally {
-      // Clear out the file input so you can import the exact same file again later if needed
-      event.target.value = '';
-    }
+  const agreements = matches.filter(m => m.eA.modelPrediction === m.eB.modelPrediction);
+  const disagreements = matches.filter(m => m.eA.modelPrediction !== m.eB.modelPrediction);
+
+  const buildTable = (list, title, color) => {
+     if (list.length === 0) return '';
+     return `
+       <div style="margin-top:24px; padding-bottom:8px; border-bottom:2px solid ${color}; display:flex; justify-content:space-between; align-items:flex-end;">
+         <h3 style="font-size:1.1rem; font-weight:700; color:var(--text-primary); margin:0;">${title}</h3>
+         <span style="font-size:0.8rem; font-weight:700; color:${color}; background:${color}22; padding:3px 10px; border-radius:12px;">${list.length} Videos</span>
+       </div>
+       <table class="data-table" style="margin-top:12px; width:100%;">
+         <thead>
+           <tr>
+             <th style="width:40px;">#</th>
+             <th>Video ID (Active)</th>
+             <th>Ground Truth</th>
+             <th style="border-left:1px solid var(--border); padding-left:12px; color:var(--accent);">${escapeHtml(active.name)}</th>
+             <th style="border-left:1px solid var(--border); padding-left:12px;">${escapeHtml(target.name)}</th>
+             <th style="text-align:right;">Watch</th>
+           </tr>
+         </thead>
+         <tbody>
+           ${list.map(m => `
+             <tr style="cursor:pointer; transition:background 0.15s;" onmouseover="this.style.background='var(--surface-3)'" onmouseout="this.style.background='transparent'" onclick="loadLogToWorkbench('${escapeHtml(m.eA.videoId)}', '${m.eA.groundTruth}')">
+               <td style="color:var(--text-secondary);">${m.eA.seq}</td>
+               <td style="font-weight:600; color:var(--text-primary);" title="Target ID: ${escapeHtml(m.eB.videoId)}">${escapeHtml(m.eA.videoId)}</td>
+               <td><span class="badge ${m.eA.groundTruth === 'Success' ? 'badge-success' : 'badge-failure'}">${m.eA.groundTruth}</span></td>
+               
+               <td style="border-left:1px solid var(--border); padding-left:12px;">
+                 <span class="badge ${m.eA.modelPrediction === 'Success' ? 'badge-success' : m.eA.modelPrediction === 'Failure' ? 'badge-failure' : 'badge-truncated'}">${m.eA.modelPrediction}</span>
+                 <span style="font-size:0.75rem; font-weight:700; color:${m.eA.accuracy === 'Accurate' ? 'var(--green)' : 'var(--red)'}; margin-left:8px;">${m.eA.accuracy === 'Accurate' ? '✓' : '✗'}</span>
+               </td>
+               
+               <td style="border-left:1px solid var(--border); padding-left:12px;">
+                 <span class="badge ${m.eB.modelPrediction === 'Success' ? 'badge-success' : m.eB.modelPrediction === 'Failure' ? 'badge-failure' : 'badge-truncated'}">${m.eB.modelPrediction}</span>
+                 <span style="font-size:0.75rem; font-weight:700; color:${m.eB.accuracy === 'Accurate' ? 'var(--green)' : 'var(--red)'}; margin-left:8px;">${m.eB.accuracy === 'Accurate' ? '✓' : '✗'}</span>
+               </td>
+
+               <td style="text-align:right;">
+                 <span style="font-size:1.2rem; opacity:0.6; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">▶</span>
+               </td>
+             </tr>
+           `).join('')}
+         </tbody>
+       </table>
+     `;
   };
-  reader.readAsText(file);
+
+  document.getElementById('compare-modal-body').innerHTML = `
+    ${buildTable(disagreements, 'Disagreements (Divergent Predictions)', 'var(--yellow)')}
+    ${buildTable(agreements, 'Agreements (Matched Predictions)', 'var(--border)')}
+    ${matches.length === 0 ? `<div style="text-align:center; padding:40px; color:var(--text-secondary);">No matching evaluation numbers (#) found between these two sessions. Ensure they were run in the same sequential order.</div>` : ''}
+  `;
+
+  document.getElementById('compare-modal').style.display = 'flex';
+  
+  // Trigger reflow to ensure the CSS transition fires smoothly
+  setTimeout(() => {
+    document.getElementById('compare-modal').style.opacity = '1';
+  }, 10);
 }
 
-// ─── EXPORT ───────────────────────────────────────────────────────────────────
-function exportJSON() {
-  if (evaluations.length === 0) { showToast('No data to export yet.', 'warn'); return; }
-  const payload = { exportedAt: new Date().toISOString(), totalEvaluations: evaluations.length, evaluations };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  triggerDownload(blob, `video-llm-eval-${dateStamp()}.json`);
-  showToast(`✓ Exported ${evaluations.length} evaluations as JSON.`, 'ok');
+function closeCompareModal() {
+  document.getElementById('compare-modal').style.opacity = '0';
+  setTimeout(() => {
+    document.getElementById('compare-modal').style.display = 'none';
+  }, 300);
 }
 
-function exportCSV() {
-  if (evaluations.length === 0) { showToast('No data to export yet.', 'warn'); return; }
-  const headers = ['#','Video ID','Model','Prompt','Ground Truth','Model Prediction','Accuracy','Error Tags','Notes','Timestamp'];
-  const rows = evaluations.map(e => [
-    e.seq,
-    csvEsc(e.videoId),
-    csvEsc(e.modelName),
-    csvEsc(e.promptText),
-    e.groundTruth,
-    e.modelPrediction,
-    e.accuracy,
-    csvEsc(e.errorTags.join('; ')),
-    csvEsc(e.notes),
-    csvEsc(e.timestamp)
-  ]);
-  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  triggerDownload(blob, `video-llm-eval-${dateStamp()}.csv`);
-  showToast(`✓ Exported ${evaluations.length} evaluations as CSV.`, 'ok');
+function loadLogToWorkbench(vidId, gtLabel) {
+  closeCompareModal();
+  switchTab('evaluate');
+  
+  document.getElementById('video-id').value = vidId;
+  if (gtLabel) {
+    setRadioValue('gt', gtLabel);
+  }
+  
+  const dropZone = document.getElementById('drop-zone');
+  dropZone.style.borderColor = 'var(--blue)';
+  dropZone.style.background = 'rgba(56, 189, 248, 0.1)';
+  
+  setTimeout(() => {
+    dropZone.style.borderColor = '';
+    dropZone.style.background = '';
+  }, 1500);
+
+  showToast(`Loaded ${vidId}. Drop the original MP4 file into the upload zone above to watch it.`, 'info');
 }
 
-function csvEsc(val) {
-  const s = String(val || '').replace(/"/g, '""');
-  return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
-}
-
-function triggerDownload(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function dateStamp() {
-  return new Date().toISOString().slice(0,10);
-}
-
-// ─── CLEAR ALL ────────────────────────────────────────────────────────────────
-function clearAllData() {
-  // Legacy: repurposed as session reset (now exposed as New Session in UI)
-  newSession();
-}
-
-// ─── SESSION MANAGEMENT ───────────────────────────────────────────────────────
 function makeSession(name) {
   return { id: Date.now().toString() + Math.random().toString(36).slice(2), name, createdAt: new Date().toISOString(), evaluations: [] };
 }
@@ -1541,7 +1621,6 @@ function loadSessionData() {
       currentSessionId = data.currentSessionId || null;
     } catch(e) { allSessions = []; }
   }
-  // Migrate old flat format
   const legacy = localStorage.getItem('videoLLMEvals');
   if (legacy && allSessions.length === 0) {
     try {
@@ -1643,44 +1722,70 @@ function defaultSessionName() {
   return `Session ${n} · ${ds} ${ts}`;
 }
 
-function renderSessionsTab() {
-  const grid = document.getElementById('sessions-grid');
-  if (!grid) return;
-  if (allSessions.length === 0) {
-    grid.innerHTML = '<div style="color:var(--text-secondary);font-size:0.85rem;grid-column:1/-1;text-align:center;padding:40px;">No sessions yet.</div>';
-    return;
-  }
-  grid.innerHTML = allSessions.slice().reverse().map(s => {
-    const isActive = s.id === currentSessionId;
-    const evals = s.evaluations.length;
-    const accurate = s.evaluations.filter(e => e.accuracy === 'Accurate').length;
-    const accPct = evals > 0 ? Math.round(accurate / evals * 100) : null;
-    const flawed = evals - accurate;
-    const created = new Date(s.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
-    return `<div class="session-card${isActive ? ' session-card-active' : ''}">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px;">
-        <div style="flex:1;">
-          <div class="session-card-name">${escapeHtml(s.name)}</div>
-          <div class="session-card-meta">${created}</div>
-        </div>
-        ${isActive ? '<span style="font-size:0.65rem;font-weight:700;padding:3px 8px;background:rgba(99,102,241,0.2);color:var(--accent);border-radius:20px;border:1px solid rgba(99,102,241,0.4);white-space:nowrap;">Active</span>' : ''}
-      </div>
-      <div style="display:flex;gap:16px;padding:12px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:14px;">
-        <div><div class="session-stat-val" style="color:var(--accent);">${evals}</div><div class="session-stat-lbl">Evaluations</div></div>
-        <div><div class="session-stat-val" style="color:var(--green);">${accPct !== null ? accPct + '%' : '—'}</div><div class="session-stat-lbl">Accuracy</div></div>
-        <div><div class="session-stat-val" style="color:var(--red);">${flawed}</div><div class="session-stat-lbl">Flawed</div></div>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn-primary" onclick="loadSession('${s.id}')" style="flex:1;padding:8px 12px;font-size:0.8rem;">${isActive ? '✓ Active' : 'Load'}</button>
-        <button class="btn-danger" onclick="deleteSession('${s.id}')" style="padding:8px 12px;font-size:0.8rem;">✕</button>
-      </div>
-    </div>`;
-  }).join('');
-  updateSessionIndicator();
+// ─── UTILS & API ─────────────────────────────────────────────────────────────
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      let importedEvals = [];
+      if (Array.isArray(data)) importedEvals = data;
+      else if (data && Array.isArray(data.evaluations)) importedEvals = data.evaluations;
+      else throw new Error("Invalid JSON format.");
+
+      if (importedEvals.length === 0) { showToast("JSON file contains no evaluations.", "warn"); return; }
+      importedEvals.forEach((ev, i) => ev.seq = i + 1);
+
+      const sessionName = file.name.replace('.json', '') + ' (Imported)';
+      const s = makeSession(sessionName);
+      s.evaluations = importedEvals;
+      allSessions.push(s);
+      currentSessionId = s.id;
+      evaluations = s.evaluations;
+
+      saveAllSessions(); renderTable(); updateMetrics(); renderInsights(); renderSessionsTab(); updateSessionIndicator();
+      showToast(`✓ Successfully imported ${importedEvals.length} evaluations.`, 'ok');
+    } catch (err) { showToast(`✗ Failed to import: ${err.message}`, 'warn'); } finally { event.target.value = ''; }
+  };
+  reader.readAsText(file);
 }
 
-// ─── TOAST ────────────────────────────────────────────────────────────────────
-let toastTimer = null;
+function exportJSON() {
+  if (evaluations.length === 0) { showToast('No data to export yet.', 'warn'); return; }
+  const payload = { exportedAt: new Date().toISOString(), totalEvaluations: evaluations.length, evaluations };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  triggerDownload(blob, `video-llm-eval-${dateStamp()}.json`);
+  showToast(`✓ Exported ${evaluations.length} evaluations as JSON.`, 'ok');
+}
+
+function exportCSV() {
+  if (evaluations.length === 0) { showToast('No data to export yet.', 'warn'); return; }
+  const headers = ['#','Video ID','Model','Prompt','Ground Truth','Model Prediction','Accuracy','Error Tags','Notes','Timestamp'];
+  const rows = evaluations.map(e => [ e.seq, csvEsc(e.videoId), csvEsc(e.modelName), csvEsc(e.promptText), e.groundTruth, e.modelPrediction, e.accuracy, csvEsc(e.errorTags.join('; ')), csvEsc(e.notes), csvEsc(e.timestamp) ]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  triggerDownload(blob, `video-llm-eval-${dateStamp()}.csv`);
+  showToast(`✓ Exported ${evaluations.length} evaluations as CSV.`, 'ok');
+}
+
+function csvEsc(val) {
+  const s = String(val || '').replace(/"/g, '""');
+  return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
+}
+
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function dateStamp() { return new Date().toISOString().slice(0,10); }
+
 function showToast(msg, type = 'ok') {
   const toast = document.getElementById('toast');
   const colors = { ok: 'var(--green)', warn: 'var(--yellow)', info: 'var(--blue)' };
@@ -1691,7 +1796,6 @@ function showToast(msg, type = 'ok') {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
 function escapeHtml(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -1700,20 +1804,24 @@ function syncPromptPreview() {
   const val = document.getElementById('prompt-text').value.trim();
   const el = document.getElementById('prompt-preview');
   if (!el) return;
-  el.innerHTML = val
-    ? `<span style="color:var(--text-primary);">${escapeHtml(val)}</span>`
-    : `<em style="color:var(--surface-4);">Enter a prompt in the left panel…</em>`;
+  el.innerHTML = val ? `<span style="color:var(--text-primary);">${escapeHtml(val)}</span>` : `<em style="color:var(--surface-4);">Enter a prompt in the left panel…</em>`;
 }
 
-// ─── TABS ─────────────────────────────────────────────────────────────────────
 function switchTab(name) {
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => {
+    p.classList.remove('active');
+    // Remove inline styles if they got stuck
+    p.style.animation = 'none';
+    p.offsetHeight; // trigger reflow
+    p.style.animation = null; 
+  });
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+  
+  const target = document.getElementById('tab-' + name);
+  target.classList.add('active');
   document.querySelector(`.tab-btn[data-tab="${name}"]`).classList.add('active');
 }
 
-// ─── API CONFIG ──────────────────────────────────────────────────────────────
 function loadSavedApiKey() {
   const saved = localStorage.getItem('llmApiKey');
   if (saved) document.getElementById('api-key').value = saved;
@@ -1737,7 +1845,6 @@ function updateProviderBadge() {
   }
 }
 
-// ─── FRAME EXTRACTION ─────────────────────────────────────────────────────────
 function seekAndCapture(video, time) {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => reject(new Error('Seek timeout — try a shorter video or fewer frames')), 8000);
@@ -1766,7 +1873,6 @@ async function extractFrames(video, numFrames) {
   return frames;
 }
 
-// ─── MODEL API CALLS ──────────────────────────────────────────────────────────
 function detectProvider(model, apiKey) {
   if (model.toLowerCase().startsWith('gemini')) return 'gemini';
   if (apiKey.startsWith('ghp_') || apiKey.startsWith('github_pat_')) return 'github';
@@ -1776,31 +1882,13 @@ function detectProvider(model, apiKey) {
 async function callGitHub(token, model, prompt, frames) {
   const body = {
     model,
-    messages: [{
-      role: 'user',
-      content: [
-        { type: 'text', text: prompt },
-        ...frames.map(f => ({ type: 'image_url', image_url: { url: `data:image/jpeg;base64,${f}`, detail: 'low' } }))
-      ]
-    }]
+    messages: [{ role: 'user', content: [{ type: 'text', text: prompt }, ...frames.map(f => ({ type: 'image_url', image_url: { url: `data:image/jpeg;base64,${f}`, detail: 'low' } }))] }]
   };
-  
-  // Use the correct token limit parameter based on model generation
-  if (model.includes('gpt-5') || model.startsWith('o')) {
-    body.max_completion_tokens = 2048;
-  } else {
-    body.max_tokens = 2048;
-  }
+  if (model.includes('gpt-5') || model.startsWith('o')) body.max_completion_tokens = 2048;
+  else body.max_tokens = 2048;
 
-  const res = await fetch('https://models.inference.ai.azure.com/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `HTTP ${res.status}`);
-  }
+  const res = await fetch('https://models.inference.ai.azure.com/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(body) });
+  if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err?.error?.message || `HTTP ${res.status}`); }
   const data = await res.json();
   return data.choices?.[0]?.message?.content || '(empty response)';
 }
@@ -1808,61 +1896,32 @@ async function callGitHub(token, model, prompt, frames) {
 async function callOpenAI(apiKey, model, prompt, frames) {
   const body = {
     model,
-    messages: [{
-      role: 'user',
-      content: [
-        { type: 'text', text: prompt },
-        ...frames.map(f => ({ type: 'image_url', image_url: { url: `data:image/jpeg;base64,${f}`, detail: 'low' } }))
-      ]
-    }]
+    messages: [{ role: 'user', content: [{ type: 'text', text: prompt }, ...frames.map(f => ({ type: 'image_url', image_url: { url: `data:image/jpeg;base64,${f}`, detail: 'low' } }))] }]
   };
-  
-  // Use the correct token limit parameter based on model generation
-  if (model.includes('gpt-5') || model.startsWith('o')) {
-    body.max_completion_tokens = 2048;
-  } else {
-    body.max_tokens = 2048;
-  }
+  if (model.includes('gpt-5') || model.startsWith('o')) body.max_completion_tokens = 2048;
+  else body.max_tokens = 2048;
 
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `HTTP ${res.status}`);
-  }
+  const res = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, body: JSON.stringify(body) });
+  if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err?.error?.message || `HTTP ${res.status}`); }
   const data = await res.json();
   return data.choices?.[0]?.message?.content || '(empty response)';
 }
 
 async function callGemini(apiKey, model, prompt, frames) {
   const modelId = model.startsWith('models/') ? model : `models/${model}`;
-  const parts = [
-    { text: prompt },
-    ...frames.map(f => ({ inline_data: { mime_type: 'image/jpeg', data: f } }))
-  ];
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/${modelId}:generateContent?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ parts }] })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `HTTP ${res.status}`);
-  }
+  const parts = [{ text: prompt }, ...frames.map(f => ({ inline_data: { mime_type: 'image/jpeg', data: f } }))];
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/${modelId}:generateContent?key=${apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts }] }) });
+  if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err?.error?.message || `HTTP ${res.status}`); }
   const data = await res.json();
   return data.candidates?.[0]?.content?.parts?.[0]?.text || '(empty response)';
 }
 
-// ─── RUN MODEL ────────────────────────────────────────────────────────────────
 async function runModel() {
   const video = document.getElementById('video-player');
   const apiKey = document.getElementById('api-key').value.trim();
   const model = document.getElementById('model-select').value.trim();
   const userPrompt = document.getElementById('prompt-text').value.trim();
-  const numFrames = Math.max(1, Math.min(60, parseInt(document.getElementById('frame-count').value) || 8));
+  const numFrames = Math.max(1, Math.min(200, parseInt(document.getElementById('frame-count').value) || 8));
 
   if (!apiKey) { showToast('⚠ Enter your API key first.', 'warn'); return; }
   if (!model) { showToast('⚠ Select or type a model name.', 'warn'); return; }
@@ -1878,17 +1937,12 @@ async function runModel() {
     showToast(`Extracting ${numFrames} frames…`, 'info');
     const frames = await extractFrames(video, numFrames);
     
-    // --- NEW: INVISIBLE PROMPT ENGINEERING ---
     const vidDuration = video.duration.toFixed(1);
     const hiddenContext = `\n\n[SYSTEM CONTEXT: You are analyzing exactly ${numFrames} static frames extracted evenly from a ${vidDuration}-second video. Frame 1 represents 0.0s and Frame ${numFrames} represents ${vidDuration}s. You must mathematically interpolate exact timestamps for any events you describe based on this frame scale.]`;
-    
     const finalPromptToSend = userPrompt + hiddenContext;
-    // -----------------------------------------
 
     showToast(`Calling ${model}…`, 'info');
     const provider = detectProvider(model, apiKey);
-    
-    // Send the injected prompt, not just what the user typed
     const output = provider === 'gemini'
       ? await callGemini(apiKey, model, finalPromptToSend, frames)
       : provider === 'github'
@@ -1917,7 +1971,6 @@ function setRunLoading(on) {
   btn.innerHTML = on ? '<span class="spin">⟳</span> Running…' : '▶ Run Model';
 }
 
-// ─── BOOT ─────────────────────────────────────────────────────────────────────
 init();
 </script>
 </body>
