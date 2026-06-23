@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Video LLM Evaluation Dashboard</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -171,6 +172,10 @@
     text-align: center;
     transition: all 0.25s var(--ease-fluid);
     user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
   }
   .radio-btn:hover { border-color: var(--accent); color: var(--text-primary); transform: translateY(-1px); }
   .radio-btn:active { transform: scale(0.97); }
@@ -197,6 +202,10 @@
     text-align: center;
     transition: all 0.3s var(--ease-fluid);
     letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
   }
   .acc-btn:hover { transform: translateY(-1px); }
   .acc-btn:active { transform: scale(0.97); }
@@ -220,7 +229,7 @@
   .checkbox-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     cursor: pointer;
     padding: 8px 12px;
     border-radius: 8px;
@@ -237,6 +246,12 @@
   .checkbox-item input:active { transform: scale(0.85); }
 
   /* Buttons */
+  .btn-primary, .btn-secondary, .btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
   .btn-primary {
     background: linear-gradient(135deg, #247ec7, #4aa6e8);
     border: none;
@@ -303,13 +318,16 @@
   .data-table tr:hover td { background: rgba(36,126,199,0.06); }
   
   .badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     padding: 3px 9px;
     border-radius: 20px;
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.04em;
   }
+  .badge i { width: 12px; height: 12px; }
   .badge-accurate { background: rgba(34,211,162,0.15); color: var(--green); border: 1px solid rgba(34,211,162,0.3); }
   .badge-flawed { background: rgba(244,91,122,0.15); color: var(--red); border: 1px solid rgba(244,91,122,0.3); }
   .badge-success { background: rgba(56,189,248,0.15); color: var(--blue); border: 1px solid rgba(56,189,248,0.3); }
@@ -584,7 +602,9 @@
 
 <div class="header-bar">
   <div>
-    <div class="logo-text">⬡ VLM Eval</div>
+    <div class="logo-text" style="display:flex; align-items:center; gap:8px;">
+      <i data-lucide="brain" style="width:18px; height:18px; stroke: #7cc5f8;"></i> VLM Eval
+    </div>    
     <div class="logo-sub">AI Model Benchmarking Dashboard</div>
   </div>
   <div style="display:flex;align-items:center;gap:12px;">
@@ -596,10 +616,10 @@
     
     <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importJSON(event)" />
     
-    <button class="btn-secondary" onclick="document.getElementById('import-file').click()" style="padding:8px 14px;font-size:0.8rem;">⬆ Import JSON</button>
-    <button class="btn-secondary" onclick="exportCSV()" style="padding:8px 14px;font-size:0.8rem;">⬇ CSV</button>
-    <button class="btn-primary" onclick="exportJSON()" style="padding:8px 14px;font-size:0.8rem;">⬇ Export JSON</button>
-    <button class="btn-secondary" onclick="newSession()" style="padding:8px 14px;font-size:0.8rem;border-color:var(--accent);color:var(--accent);">+ New Session</button>
+    <button class="btn-secondary" onclick="document.getElementById('import-file').click()" style="padding:8px 14px;font-size:0.8rem;"><i data-lucide="upload" class="w-3 h-3"></i> Import JSON</button>
+    <button class="btn-secondary" onclick="exportCSV()" style="padding:8px 14px;font-size:0.8rem;"><i data-lucide="download" class="w-3 h-3"></i> CSV</button>
+    <button class="btn-primary" onclick="exportJSON()" style="padding:8px 14px;font-size:0.8rem;"><i data-lucide="download" class="w-3 h-3"></i> Export JSON</button>
+    <button class="btn-secondary" onclick="newSession()" style="padding:8px 14px;font-size:0.8rem;border-color:var(--accent);color:var(--accent);"><i data-lucide="plus" class="w-3 h-3"></i> New Session</button>
   </div>
 </div>
 
@@ -669,10 +689,10 @@
   </div>
 
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="evaluate" onclick="switchTab('evaluate')">▶ Evaluate</button>
-    <button class="tab-btn" data-tab="log" onclick="switchTab('log')">📊 Log <span class="tab-badge" id="tab-log-badge">0</span></button>
-    <button class="tab-btn" data-tab="insights" onclick="switchTab('insights')">💡 Insights</button>
-    <button class="tab-btn" data-tab="sessions" onclick="switchTab('sessions')">🗂 Sessions <span class="tab-badge" id="tab-sessions-badge">1</span></button>
+    <button class="tab-btn active" data-tab="evaluate" onclick="switchTab('evaluate')"><i data-lucide="play" class="w-4 h-4"></i> Evaluate</button>
+    <button class="tab-btn" data-tab="log" onclick="switchTab('log')"><i data-lucide="list" class="w-4 h-4"></i> Log <span class="tab-badge" id="tab-log-badge">0</span></button>
+    <button class="tab-btn" data-tab="insights" onclick="switchTab('insights')"><i data-lucide="lightbulb" class="w-4 h-4"></i> Insights</button>
+    <button class="tab-btn" data-tab="sessions" onclick="switchTab('sessions')"><i data-lucide="folder-git" class="w-4 h-4"></i> Sessions <span class="tab-badge" id="tab-sessions-badge">1</span></button>
   </div>
 
   <div class="tab-pane active" id="tab-evaluate">
@@ -681,10 +701,12 @@
     <div style="display:flex;flex-direction:column;gap:14px;">
 
       <div class="panel">
-        <div class="panel-title">📁 Media Upload</div>
+        <div class="panel-title"><i data-lucide="folder-up" class="w-4 h-4"></i> Media Upload</div>
         <div id="drop-zone" onclick="document.getElementById('file-input').click()">
           <input type="file" id="file-input" accept="video/mp4,video/*" onchange="handleFileUpload(event)"/>
-          <div id="drop-icon" style="font-size:2rem;margin-bottom:8px;">🎬</div>
+          <div id="drop-icon" style="display:flex; justify-content:center; margin-bottom:12px; color:var(--text-secondary);">
+            <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+          </div>
           <div id="drop-label" style="font-size:0.85rem;font-weight:600;color:var(--text-primary);">Drop MP4 here or click to browse</div>
           <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:4px;">Supports MP4, WebM, MOV</div>
         </div>
@@ -700,14 +722,14 @@
         </div>
 
         <div id="filename-display" style="display:none;margin-top:10px;padding:7px 10px 7px 12px;background:var(--surface-3);border:1px solid var(--border);border-radius:7px;font-size:0.78rem;color:var(--text-secondary);word-break:break-all;align-items:center;gap:8px;">
-          <span style="color:var(--accent);font-weight:600;flex-shrink:0;">📄</span>
+          <span style="color:var(--accent);font-weight:600;flex-shrink:0;"><i data-lucide="file-video" class="w-4 h-4"></i></span>
           <span id="filename-text" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-          <button onclick="clearVideoUpload()" title="Remove video" style="flex-shrink:0;background:transparent;border:none;cursor:pointer;color:var(--text-secondary);font-size:1rem;padding:2px 4px;border-radius:4px;line-height:1;transition:color 0.2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-secondary)'">✕</button>
+          <button onclick="clearVideoUpload()" title="Remove video" style="flex-shrink:0;background:transparent;border:none;cursor:pointer;color:var(--text-secondary);padding:2px 4px;border-radius:4px;transition:color 0.2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text-secondary)'"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title">⚙️ Model Configuration</div>
+        <div class="panel-title"><i data-lucide="sliders" class="w-4 h-4"></i> Model Configuration</div>
         <div style="display:flex;flex-direction:column;gap:12px;">
 
           <div>
@@ -728,6 +750,8 @@
               <option value="gpt-4.1">gpt-4.1 (OpenAI)</option>
               <option value="gpt-4.5-preview">gpt-4.5-preview (OpenAI)</option>
               <option value="o4-mini">o4-mini (OpenAI)</option>
+              <option value="qwen-vl-max">qwen-vl-max (Alibaba DashScope)</option>
+              <option value="qwen-vl-plus">qwen-vl-plus (Alibaba DashScope)</option>
               <option value="Meta-Llama-3.1-70B-Instruct">Meta-Llama-3.1-70B-Instruct (GitHub free)</option>
               <option value="gemini-2.5-flash">gemini-2.5-flash (Google — free tier)</option>
               <option value="gemini-2.0-flash">gemini-2.0-flash (Google — free tier)</option>
@@ -740,11 +764,10 @@
               <span>API Key</span>
               <span style="font-size:0.65rem;color:var(--text-secondary);">Saved locally in browser</span>
             </label>
-            <input type="password" id="api-key" placeholder="sk-… OpenAI · AIza… Gemini · ghp_… GitHub (free)" oninput="localStorage.setItem('llmApiKey',this.value);updateProviderBadge()" autocomplete="off" />
+            <input type="password" id="api-key" placeholder="sk-… OpenAI · AIza… Gemini · ghp_… GitHub" oninput="localStorage.setItem('llmApiKey',this.value);updateProviderBadge()" autocomplete="off" />
             <div style="margin-top:6px;font-size:0.7rem;color:var(--text-secondary);line-height:1.5;">
-              💡 <strong style="color:var(--text-primary);">Free option:</strong> Use a GitHub PAT (<code style="background:var(--surface-4);padding:1px 5px;border-radius:4px;">ghp_…</code>) — get one at
+              <i data-lucide="info" style="display:inline; width:12px; height:12px;"></i> <strong style="color:var(--text-primary);">Free option:</strong> Use a GitHub PAT (<code style="background:var(--surface-4);padding:1px 5px;border-radius:4px;">ghp_…</code>) — get one at
               <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--accent);text-decoration:none;">github.com/settings/tokens</a>
-              (no scopes needed). Gives access to GPT-4o &amp; more at no cost.
             </div>
           </div>
 
@@ -759,7 +782,7 @@
     </div>
 
     <div class="panel" style="display:flex;flex-direction:column;gap:0;">
-      <div class="panel-title">🔬 Evaluation Workbench</div>
+      <div class="panel-title"><i data-lucide="cpu" class="w-4 h-4"></i> Evaluation Workbench</div>
 
       <div style="display:flex;gap:10px;align-items:flex-end;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid var(--border);">
         <div style="flex:1;">
@@ -783,7 +806,7 @@
             </select>
             <input type="number" id="frame-count" value="8" min="1" max="200" style="width:68px;" title="Total Frames" />
             <button class="btn-primary" id="run-model-btn" onclick="runModel()" style="padding:10px 22px;font-size:0.95rem;white-space:nowrap;">
-              ▶ Run Model
+              <i data-lucide="play" class="w-4 h-4"></i> Run Model
             </button>
           </div>
         </div>
@@ -802,25 +825,25 @@
         <div>
           <label>Ground Truth Label</label>
           <div class="radio-group" id="gt-group">
-            <div class="radio-btn" data-group="gt" data-val="Success" onclick="selectRadio(this,'gt')">✅ Success</div>
-            <div class="radio-btn" data-group="gt" data-val="Failure" onclick="selectRadio(this,'gt')">❌ Failure</div>
+            <div class="radio-btn" data-group="gt" data-val="Success" onclick="selectRadio(this,'gt')"><i data-lucide="check-circle" class="w-4 h-4"></i> Success</div>
+            <div class="radio-btn" data-group="gt" data-val="Failure" onclick="selectRadio(this,'gt')"><i data-lucide="x-circle" class="w-4 h-4"></i> Failure</div>
           </div>
         </div>
 
         <div>
           <label>Model Prediction</label>
           <div class="radio-group" id="pred-group">
-            <div class="radio-btn" data-group="pred" data-val="Success" onclick="selectRadio(this,'pred')">✅ Success</div>
-            <div class="radio-btn" data-group="pred" data-val="Failure" onclick="selectRadio(this,'pred')">❌ Failure</div>
-            <div class="radio-btn" data-group="pred" data-val="Truncated" onclick="selectRadio(this,'pred')">⚠ Truncated</div>
+            <div class="radio-btn" data-group="pred" data-val="Success" onclick="selectRadio(this,'pred')"><i data-lucide="check-circle" class="w-4 h-4"></i> Success</div>
+            <div class="radio-btn" data-group="pred" data-val="Failure" onclick="selectRadio(this,'pred')"><i data-lucide="x-circle" class="w-4 h-4"></i> Failure</div>
+            <div class="radio-btn" data-group="pred" data-val="Truncated" onclick="selectRadio(this,'pred')"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Truncated</div>
           </div>
         </div>
 
         <div style="grid-column:1/-1;">
           <label>Final Accuracy Verdict</label>
           <div id="accuracy-toggle">
-            <div class="acc-btn" id="btn-accurate" onclick="setAccuracy('Accurate')">✓ Accurate</div>
-            <div class="acc-btn" id="btn-flawed" onclick="setAccuracy('Flawed')">✗ Flawed</div>
+            <div class="acc-btn" id="btn-accurate" onclick="setAccuracy('Accurate')"><i data-lucide="check" class="w-4 h-4"></i> Accurate</div>
+            <div class="acc-btn" id="btn-flawed" onclick="setAccuracy('Flawed')"><i data-lucide="x" class="w-4 h-4"></i> Flawed</div>
           </div>
         </div>
 
@@ -829,27 +852,27 @@
           <div class="checkbox-group" id="error-checkboxes">
             <label class="checkbox-item" id="cb-hallucinated">
               <input type="checkbox" value="Hallucinated Asset" onchange="toggleCheckStyle(this)"/>
-              🌀 Hallucinated Asset
+              <i data-lucide="ghost" class="w-3 h-3"></i> Hallucinated Asset
             </label>
             <label class="checkbox-item" id="cb-temporal">
               <input type="checkbox" value="Temporal / Timestamp Error" onchange="toggleCheckStyle(this)"/>
-              ⏱ Temporal / Timestamp Error
+              <i data-lucide="clock" class="w-3 h-3"></i> Temporal / Timestamp Error
             </label>
             <label class="checkbox-item" id="cb-perspective">
               <input type="checkbox" value="Perspective Illusion" onchange="toggleCheckStyle(this)"/>
-              👁 Perspective Illusion
+              <i data-lucide="eye" class="w-3 h-3"></i> Perspective Illusion
             </label>
             <label class="checkbox-item" id="cb-rootcause">
               <input type="checkbox" value="Missed Root Cause" onchange="toggleCheckStyle(this)"/>
-              🎯 Missed Root Cause
+              <i data-lucide="target" class="w-3 h-3"></i> Missed Root Cause
             </label>
             <label class="checkbox-item" id="cb-context">
               <input type="checkbox" value="Context Loss" onchange="toggleCheckStyle(this)"/>
-              📦 Context Loss
+              <i data-lucide="package" class="w-3 h-3"></i> Context Loss
             </label>
             <label class="checkbox-item" id="cb-other">
               <input type="checkbox" value="Other" onchange="toggleCheckStyle(this)"/>
-              ✏ Other
+              <i data-lucide="pencil" class="w-3 h-3"></i> Other
             </label>
           </div>
         </div>
@@ -860,17 +883,19 @@
         </div>
 
         <div style="grid-column:1/-1;display:flex;gap:10px;justify-content:flex-end;margin-top:4px;">
-          <button class="btn-secondary" onclick="resetForm()">Reset Form</button>
-          <button class="btn-primary" onclick="submitEvaluation()">＋ Log Evaluation</button>
+          <button class="btn-secondary" onclick="resetForm()"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset Form</button>
+          <button class="btn-primary" onclick="submitEvaluation()"><i data-lucide="plus-circle" class="w-4 h-4"></i> Log Evaluation</button>
         </div>
 
       </div>
     </div>
   </div>
-  </div><div class="tab-pane" id="tab-log">
+  </div>
+
+  <div class="tab-pane" id="tab-log">
     <div class="panel">
       <div class="panel-title" style="justify-content:space-between;">
-        <span>📊 Evaluation Log</span>
+        <span style="display:flex; align-items:center; gap:8px;"><i data-lucide="list" class="w-4 h-4"></i> Evaluation Log</span>
         <span id="log-count" style="font-size:0.72rem;color:var(--text-secondary);font-weight:400;text-transform:none;letter-spacing:0;">0 entries</span>
       </div>
       <div class="table-scroll" style="max-height:calc(100vh - 300px);">
@@ -899,18 +924,20 @@
         </table>
       </div>
     </div>
-  </div><div class="tab-pane" id="tab-insights">
+  </div>
+
+  <div class="tab-pane" id="tab-insights">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;">
 
       <div class="panel">
-        <div class="panel-title">📉 Error Breakdown</div>
+        <div class="panel-title"><i data-lucide="bar-chart-2" class="w-4 h-4"></i> Error Breakdown</div>
         <div id="error-bars">
           <div style="font-size:0.78rem;color:var(--text-secondary);text-align:center;padding:24px 0;">No errors logged yet</div>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-title">💡 Automated Insights</div>
+        <div class="panel-title"><i data-lucide="zap" class="w-4 h-4"></i> Automated Insights</div>
         <div id="insights-container">
           <div style="font-size:0.78rem;color:var(--text-secondary);text-align:center;padding:24px 0;">
             Insights will generate after evaluations are logged.
@@ -919,16 +946,19 @@
       </div>
 
     </div>
-  </div><div class="tab-pane" id="tab-sessions">
+  </div>
+
+  <div class="tab-pane" id="tab-sessions">
     <div id="sessions-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;">
       </div>
-  </div></div>
+  </div>
+</div>
 
 <div id="compare-modal" onclick="if(event.target===this) closeCompareModal()">
   <div class="modal-content">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
-      <h2 style="font-size: 1.2rem; font-weight: 700;">📊 Side-by-Side Model Comparison</h2>
-      <button class="btn-secondary" onclick="closeCompareModal()" style="padding: 6px 12px;">✕ Close</button>
+      <h2 style="font-size: 1.2rem; font-weight: 700; display:flex; align-items:center; gap:8px;"><i data-lucide="bar-chart" class="w-5 h-5"></i> Side-by-Side Model Comparison</h2>
+      <button class="btn-secondary" onclick="closeCompareModal()" style="padding: 6px 12px;"><i data-lucide="x" class="w-4 h-4"></i> Close</button>
     </div>
     <div id="compare-modal-body"></div>
   </div>
@@ -957,6 +987,7 @@ const ERROR_MODES = [
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 function init() {
+  lucide.createIcons();
   loadSessionData();
   loadSavedApiKey();
   renderTable();
@@ -1007,7 +1038,7 @@ function loadVideoFile(file) {
   };
 
   player.onerror = function() {
-    showToast('⚠ Error: Your web browser cannot read this video format or codec. Try converting to H.264/MP4.', 'warn');
+    showToast('Error: Your web browser cannot read this video format or codec. Try converting to H.264/MP4.', 'warn');
   };
 
   player.src = currentVideoURL;
@@ -1016,7 +1047,7 @@ function loadVideoFile(file) {
   const playControls = document.getElementById('video-playback-controls');
   if (playControls) playControls.style.display = 'flex';
 
-  document.getElementById('drop-icon').textContent = '✅';
+  document.getElementById('drop-icon').innerHTML = '<i data-lucide="file-video" class="w-8 h-8" style="color:var(--green)"></i>';
   document.getElementById('drop-label').textContent = file.name;
   const fd = document.getElementById('filename-display');
   fd.style.display = 'flex';
@@ -1025,6 +1056,7 @@ function loadVideoFile(file) {
     document.getElementById('video-id').value = file.name;
   }
   applyGroundTruthFromVideoId(file.name);
+  lucide.createIcons();
 }
 
 function clearVideoUpload() {
@@ -1036,11 +1068,12 @@ function clearVideoUpload() {
   const playControls = document.getElementById('video-playback-controls');
   if (playControls) playControls.style.display = 'none';
   if (currentVideoURL) { URL.revokeObjectURL(currentVideoURL); currentVideoURL = null; }
-  document.getElementById('drop-icon').textContent = '🎦';
+  document.getElementById('drop-icon').innerHTML = '<i data-lucide="upload-cloud" class="w-8 h-8"></i>';
   document.getElementById('drop-label').textContent = 'Drop MP4 here or click to browse';
   document.getElementById('filename-display').style.display = 'none';
   document.getElementById('filename-text').textContent = '';
   document.getElementById('file-input').value = '';
+  lucide.createIcons();
 }
 
 function inferGroundTruthFromFilename(filename) {
@@ -1175,11 +1208,11 @@ function submitEvaluation() {
   const modelOutput = document.getElementById('model-output').value.trim();
   const notes = document.getElementById('reviewer-notes').value.trim();
 
-  if (!videoId) { showToast('⚠ Please enter a Video ID or filename.', 'warn'); return; }
-  if (!modelName) { showToast('⚠ Please enter the Model Name.', 'warn'); return; }
-  if (!groundTruth) { showToast('⚠ Please select a Ground Truth label.', 'warn'); return; }
-  if (!modelPrediction) { showToast('⚠ Please select a Model Prediction.', 'warn'); return; }
-  if (!currentAccuracy) { showToast('⚠ Please set the Final Accuracy Verdict.', 'warn'); return; }
+  if (!videoId) { showToast('Please enter a Video ID or filename.', 'warn'); return; }
+  if (!modelName) { showToast('Please enter the Model Name.', 'warn'); return; }
+  if (!groundTruth) { showToast('Please select a Ground Truth label.', 'warn'); return; }
+  if (!modelPrediction) { showToast('Please select a Model Prediction.', 'warn'); return; }
+  if (!currentAccuracy) { showToast('Please set the Final Accuracy Verdict.', 'warn'); return; }
 
   const errorTags = [];
   document.querySelectorAll('#error-checkboxes input[type="checkbox"]:checked').forEach(cb => {
@@ -1208,7 +1241,7 @@ function submitEvaluation() {
   renderTable();
   updateMetrics();
   renderInsights();
-  showToast(`✓ Evaluation #${entry.seq} logged.`, 'ok');
+  showToast(`Evaluation #${entry.seq} logged.`, 'ok');
   resetForm();
 }
 
@@ -1267,10 +1300,18 @@ function renderTable() {
 
   tbody.innerHTML = evaluations.slice().reverse().map((e, i) => {
     const isNew = i === 0;
-    const gtBadge = `<span class="badge ${e.groundTruth === 'Success' ? 'badge-success' : 'badge-failure'}">${e.groundTruth}</span>`;
+    
+    // Badges
+    const gtIcon = e.groundTruth === 'Success' ? 'check-circle' : 'x-circle';
+    const gtBadge = `<span class="badge ${e.groundTruth === 'Success' ? 'badge-success' : 'badge-failure'}"><i data-lucide="${gtIcon}"></i> ${e.groundTruth}</span>`;
+    
     const predClass = e.modelPrediction === 'Success' ? 'badge-success' : e.modelPrediction === 'Failure' ? 'badge-failure' : 'badge-truncated';
-    const predBadge = `<span class="badge ${predClass}">${e.modelPrediction}</span>`;
-    const accBadge = `<span class="badge ${e.accuracy === 'Accurate' ? 'badge-accurate' : 'badge-flawed'}">${e.accuracy}</span>`;
+    const predIcon = e.modelPrediction === 'Success' ? 'check-circle' : e.modelPrediction === 'Failure' ? 'x-circle' : 'alert-triangle';
+    const predBadge = `<span class="badge ${predClass}"><i data-lucide="${predIcon}"></i> ${e.modelPrediction}</span>`;
+    
+    const accIcon = e.accuracy === 'Accurate' ? 'check' : 'x';
+    const accBadge = `<span class="badge ${e.accuracy === 'Accurate' ? 'badge-accurate' : 'badge-flawed'}"><i data-lucide="${accIcon}"></i> ${e.accuracy}</span>`;
+    
     const tags = e.errorTags.length
       ? e.errorTags.map(t => `<span style="font-size:0.65rem;background:rgba(244,91,122,0.12);border:1px solid rgba(244,91,122,0.3);color:var(--red);border-radius:4px;padding:1px 6px;margin-right:3px;white-space:nowrap;">${t}</span>`).join('')
       : '<span style="color:var(--text-secondary);font-size:0.72rem;">—</span>';
@@ -1298,9 +1339,11 @@ function renderTable() {
       <td style="max-width:200px;">${tags}</td>
       <td style="color:var(--text-secondary);font-size:0.72rem;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHtml(e.notes)}">${escapeHtml(e.notes) || '—'}</td>
       <td style="color:var(--text-secondary);white-space:nowrap;font-size:0.72rem;">${e.timestamp}</td>
-      <td><button class="btn-danger" onclick="deleteEntry(${e.id})" style="padding:4px 9px;font-size:0.7rem;">✕</button></td>
+      <td><button class="btn-danger" onclick="deleteEntry(${e.id})" style="padding:4px 9px;"><i data-lucide="trash-2" class="w-3 h-3"></i></button></td>
     </tr>`;
   }).join('');
+  
+  lucide.createIcons();
 }
 
 function updateMetrics() {
@@ -1492,13 +1535,14 @@ function renderSessionsTab() {
       </div>
 
       <div style="display:flex;gap:6px;">
-        <button class="btn-primary" onclick="loadSession('${s.id}')" style="flex:1;padding:8px 12px;font-size:0.75rem;">${isActive ? '✓ Active' : 'Load'}</button>
-        ${!isActive ? `<button class="btn-secondary" onclick="openCompareModal('${s.id}')" style="flex:1;padding:8px 12px;font-size:0.75rem;" title="Compare with Active Session">⚖ Compare</button>` : `<div style="flex:1"></div>`}
-        <button class="btn-danger" onclick="deleteSession('${s.id}')" style="padding:8px 12px;font-size:0.75rem;">✕</button>
+        <button class="btn-primary" onclick="loadSession('${s.id}')" style="flex:1;padding:8px 12px;font-size:0.75rem;">${isActive ? '<i data-lucide="check" class="w-3 h-3"></i> Active' : 'Load'}</button>
+        ${!isActive ? `<button class="btn-secondary" onclick="openCompareModal('${s.id}')" style="flex:1;padding:8px 12px;font-size:0.75rem;" title="Compare with Active Session"><i data-lucide="scale" class="w-3 h-3"></i> Compare</button>` : `<div style="flex:1"></div>`}
+        <button class="btn-danger" onclick="deleteSession('${s.id}')" style="padding:8px 12px;font-size:0.75rem;"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
       </div>
     </div>`;
   }).join('');
   updateSessionIndicator();
+  lucide.createIcons();
 }
 
 function openCompareModal(targetSessionId) {
@@ -1536,27 +1580,34 @@ function openCompareModal(targetSessionId) {
            </tr>
          </thead>
          <tbody>
-           ${list.map(m => `
+           ${list.map(m => {
+             const gtIcon = m.eA.groundTruth === 'Success' ? 'check-circle' : 'x-circle';
+             const predAIcon = m.eA.modelPrediction === 'Success' ? 'check-circle' : m.eA.modelPrediction === 'Failure' ? 'x-circle' : 'alert-triangle';
+             const predBIcon = m.eB.modelPrediction === 'Success' ? 'check-circle' : m.eB.modelPrediction === 'Failure' ? 'x-circle' : 'alert-triangle';
+             const accAIcon = m.eA.accuracy === 'Accurate' ? 'check' : 'x';
+             const accBIcon = m.eB.accuracy === 'Accurate' ? 'check' : 'x';
+             
+             return `
              <tr style="cursor:pointer; transition:background 0.15s;" onmouseover="this.style.background='var(--surface-3)'" onmouseout="this.style.background='transparent'" onclick="loadLogToWorkbench('${escapeHtml(m.eA.videoId)}', '${m.eA.groundTruth}')">
                <td style="color:var(--text-secondary);">${m.eA.seq}</td>
                <td style="font-weight:600; color:var(--text-primary);" title="Target ID: ${escapeHtml(m.eB.videoId)}">${escapeHtml(m.eA.videoId)}</td>
-               <td><span class="badge ${m.eA.groundTruth === 'Success' ? 'badge-success' : 'badge-failure'}">${m.eA.groundTruth}</span></td>
+               <td><span class="badge ${m.eA.groundTruth === 'Success' ? 'badge-success' : 'badge-failure'}"><i data-lucide="${gtIcon}"></i> ${m.eA.groundTruth}</span></td>
                
                <td style="border-left:1px solid var(--border); padding-left:12px;">
-                 <span class="badge ${m.eA.modelPrediction === 'Success' ? 'badge-success' : m.eA.modelPrediction === 'Failure' ? 'badge-failure' : 'badge-truncated'}">${m.eA.modelPrediction}</span>
-                 <span style="font-size:0.75rem; font-weight:700; color:${m.eA.accuracy === 'Accurate' ? 'var(--green)' : 'var(--red)'}; margin-left:8px;">${m.eA.accuracy === 'Accurate' ? '✓' : '✗'}</span>
+                 <span class="badge ${m.eA.modelPrediction === 'Success' ? 'badge-success' : m.eA.modelPrediction === 'Failure' ? 'badge-failure' : 'badge-truncated'}"><i data-lucide="${predAIcon}"></i> ${m.eA.modelPrediction}</span>
+                 <span style="display:inline-flex; align-items:center; font-size:0.75rem; font-weight:700; color:${m.eA.accuracy === 'Accurate' ? 'var(--green)' : 'var(--red)'}; margin-left:8px;"><i data-lucide="${accAIcon}" class="w-3 h-3"></i></span>
                </td>
                
                <td style="border-left:1px solid var(--border); padding-left:12px;">
-                 <span class="badge ${m.eB.modelPrediction === 'Success' ? 'badge-success' : m.eB.modelPrediction === 'Failure' ? 'badge-failure' : 'badge-truncated'}">${m.eB.modelPrediction}</span>
-                 <span style="font-size:0.75rem; font-weight:700; color:${m.eB.accuracy === 'Accurate' ? 'var(--green)' : 'var(--red)'}; margin-left:8px;">${m.eB.accuracy === 'Accurate' ? '✓' : '✗'}</span>
+                 <span class="badge ${m.eB.modelPrediction === 'Success' ? 'badge-success' : m.eB.modelPrediction === 'Failure' ? 'badge-failure' : 'badge-truncated'}"><i data-lucide="${predBIcon}"></i> ${m.eB.modelPrediction}</span>
+                 <span style="display:inline-flex; align-items:center; font-size:0.75rem; font-weight:700; color:${m.eB.accuracy === 'Accurate' ? 'var(--green)' : 'var(--red)'}; margin-left:8px;"><i data-lucide="${accBIcon}" class="w-3 h-3"></i></span>
                </td>
 
                <td style="text-align:right;">
-                 <span style="font-size:1.2rem; opacity:0.6; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''">▶</span>
+                 <span style="display:inline-flex; align-items:center; opacity:0.6; transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color=''"><i data-lucide="play-circle" class="w-5 h-5"></i></span>
                </td>
              </tr>
-           `).join('')}
+           `}).join('')}
          </tbody>
        </table>
      `;
@@ -1569,6 +1620,7 @@ function openCompareModal(targetSessionId) {
   `;
 
   document.getElementById('compare-modal').style.display = 'flex';
+  lucide.createIcons();
   
   // Trigger reflow to ensure the CSS transition fires smoothly
   setTimeout(() => {
@@ -1664,7 +1716,7 @@ function newSession() {
   renderSessionsTab();
   updateSessionIndicator();
   resetForm();
-  showToast(`✓ Started “${s.name}”`, 'ok');
+  showToast(`Started “${s.name}”`, 'ok');
 }
 
 function loadSession(id) {
@@ -1677,7 +1729,7 @@ function loadSession(id) {
   renderSessionsTab();
   updateSessionIndicator();
   switchTab('evaluate');
-  showToast(`✓ Loaded “${getCurrentSession().name}”`, 'ok');
+  showToast(`Loaded “${getCurrentSession().name}”`, 'ok');
 }
 
 function deleteSession(id) {
@@ -1746,8 +1798,8 @@ function importJSON(event) {
       evaluations = s.evaluations;
 
       saveAllSessions(); renderTable(); updateMetrics(); renderInsights(); renderSessionsTab(); updateSessionIndicator();
-      showToast(`✓ Successfully imported ${importedEvals.length} evaluations.`, 'ok');
-    } catch (err) { showToast(`✗ Failed to import: ${err.message}`, 'warn'); } finally { event.target.value = ''; }
+      showToast(`Successfully imported ${importedEvals.length} evaluations.`, 'ok');
+    } catch (err) { showToast(`Failed to import: ${err.message}`, 'warn'); } finally { event.target.value = ''; }
   };
   reader.readAsText(file);
 }
@@ -1757,7 +1809,7 @@ function exportJSON() {
   const payload = { exportedAt: new Date().toISOString(), totalEvaluations: evaluations.length, evaluations };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   triggerDownload(blob, `video-llm-eval-${dateStamp()}.json`);
-  showToast(`✓ Exported ${evaluations.length} evaluations as JSON.`, 'ok');
+  showToast(`Exported ${evaluations.length} evaluations as JSON.`, 'ok');
 }
 
 function exportCSV() {
@@ -1767,7 +1819,7 @@ function exportCSV() {
   const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   triggerDownload(blob, `video-llm-eval-${dateStamp()}.csv`);
-  showToast(`✓ Exported ${evaluations.length} evaluations as CSV.`, 'ok');
+  showToast(`Exported ${evaluations.length} evaluations as CSV.`, 'ok');
 }
 
 function csvEsc(val) {
@@ -1789,8 +1841,14 @@ function dateStamp() { return new Date().toISOString().slice(0,10); }
 function showToast(msg, type = 'ok') {
   const toast = document.getElementById('toast');
   const colors = { ok: 'var(--green)', warn: 'var(--yellow)', info: 'var(--blue)' };
+  
+  // Set dynamic icon based on toast type
+  const icon = type === 'ok' ? 'check-circle' : type === 'warn' ? 'alert-triangle' : 'info';
+  
   toast.style.borderColor = colors[type] || 'var(--accent)';
-  toast.textContent = msg;
+  toast.innerHTML = `<div style="display:flex; align-items:center; gap:8px;"><i data-lucide="${icon}" class="w-4 h-4"></i> ${msg}</div>`;
+  lucide.createIcons();
+  
   toast.classList.add('show');
   if (toastTimer) clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
@@ -1810,9 +1868,8 @@ function syncPromptPreview() {
 function switchTab(name) {
   document.querySelectorAll('.tab-pane').forEach(p => {
     p.classList.remove('active');
-    // Remove inline styles if they got stuck
     p.style.animation = 'none';
-    p.offsetHeight; // trigger reflow
+    p.offsetHeight; 
     p.style.animation = null; 
   });
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1836,6 +1893,9 @@ function updateProviderBadge() {
   if (model.startsWith('gemini')) {
     badge.textContent = 'Google';
     badge.className = 'api-provider-badge provider-gemini';
+  } else if (model.startsWith('qwen')) {
+    badge.textContent = 'Alibaba';
+    badge.className = 'api-provider-badge provider-openai'; // Reusing green style
   } else if (key.startsWith('ghp_') || key.startsWith('github_pat_')) {
     badge.textContent = 'GitHub — free';
     badge.className = 'api-provider-badge provider-github';
@@ -1875,8 +1935,30 @@ async function extractFrames(video, numFrames) {
 
 function detectProvider(model, apiKey) {
   if (model.toLowerCase().startsWith('gemini')) return 'gemini';
+  if (model.toLowerCase().startsWith('qwen')) return 'qwen';
   if (apiKey.startsWith('ghp_') || apiKey.startsWith('github_pat_')) return 'github';
   return 'openai';
+}
+
+async function callQwen(apiKey, model, prompt, frames) {
+  const body = {
+    model,
+    messages: [{ role: 'user', content: [{ type: 'text', text: prompt }, ...frames.map(f => ({ type: 'image_url', image_url: { url: `data:image/jpeg;base64,${f}` } }))] }],
+    max_tokens: 2048
+  };
+
+  const res = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', { 
+    method: 'POST', 
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` }, 
+    body: JSON.stringify(body) 
+  });
+  
+  if (!res.ok) { 
+    const err = await res.json().catch(() => ({})); 
+    throw new Error(err?.error?.message || `HTTP ${res.status}`); 
+  }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || '(empty response)';
 }
 
 async function callGitHub(token, model, prompt, frames) {
@@ -1923,15 +2005,16 @@ async function runModel() {
   const userPrompt = document.getElementById('prompt-text').value.trim();
   const numFrames = Math.max(1, Math.min(200, parseInt(document.getElementById('frame-count').value) || 8));
 
-  if (!apiKey) { showToast('⚠ Enter your API key first.', 'warn'); return; }
-  if (!model) { showToast('⚠ Select or type a model name.', 'warn'); return; }
-  if (!userPrompt) { showToast('⚠ Write a prompt first.', 'warn'); return; }
-  if (!video.src || video.readyState < 1) { showToast('⚠ Upload a video file first.', 'warn'); return; }
+  if (!apiKey) { showToast('Enter your API key first.', 'warn'); return; }
+  if (!model) { showToast('Select or type a model name.', 'warn'); return; }
+  if (!userPrompt) { showToast('Write a prompt first.', 'warn'); return; }
+  if (!video.src || video.readyState < 1) { showToast('Upload a video file first.', 'warn'); return; }
 
   setRunLoading(true);
   document.getElementById('model-output').value = '';
-  document.getElementById('output-status').textContent = 'running…';
+  document.getElementById('output-status').innerHTML = '<span style="display:flex; align-items:center; gap:4px;"><i data-lucide="loader-2" class="w-3 h-3 spin"></i> running…</span>';
   document.getElementById('output-status').style.color = 'var(--yellow)';
+  lucide.createIcons();
 
   try {
     showToast(`Extracting ${numFrames} frames…`, 'info');
@@ -1947,19 +2030,23 @@ async function runModel() {
       ? await callGemini(apiKey, model, finalPromptToSend, frames)
       : provider === 'github'
         ? await callGitHub(apiKey, model, finalPromptToSend, frames)
-        : await callOpenAI(apiKey, model, finalPromptToSend, frames);
+        : provider === 'qwen'
+          ? await callQwen(apiKey, model, finalPromptToSend, frames)
+          : await callOpenAI(apiKey, model, finalPromptToSend, frames);
         
     document.getElementById('model-output').value = output;
     document.getElementById('model-output').scrollTop = 0;
     applyPredictionFromOutput(output);
-    document.getElementById('output-status').textContent = `✓ Output from ${model}`;
+    document.getElementById('output-status').innerHTML = `<span style="display:flex; align-items:center; gap:4px;"><i data-lucide="check" class="w-3 h-3"></i> Output from ${model}</span>`;
     document.getElementById('output-status').style.color = 'var(--green)';
-    showToast('✓ Response received — review and score below.', 'ok');
+    lucide.createIcons();
+    showToast('Response received — review and score below.', 'ok');
   } catch (err) {
     document.getElementById('model-output').value = `[Error] ${err.message}`;
-    document.getElementById('output-status').textContent = '✗ Error';
+    document.getElementById('output-status').innerHTML = `<span style="display:flex; align-items:center; gap:4px;"><i data-lucide="x" class="w-3 h-3"></i> Error</span>`;
     document.getElementById('output-status').style.color = 'var(--red)';
-    showToast(`✗ ${err.message}`, 'warn');
+    lucide.createIcons();
+    showToast(`${err.message}`, 'warn');
   } finally {
     setRunLoading(false);
   }
@@ -1968,7 +2055,8 @@ async function runModel() {
 function setRunLoading(on) {
   const btn = document.getElementById('run-model-btn');
   btn.disabled = on;
-  btn.innerHTML = on ? '<span class="spin">⟳</span> Running…' : '▶ Run Model';
+  btn.innerHTML = on ? '<span style="display:flex; align-items:center; gap:6px;"><i data-lucide="loader-2" class="w-4 h-4 spin"></i> Running…</span>' : '<span style="display:flex; align-items:center; gap:6px;"><i data-lucide="play" class="w-4 h-4"></i> Run Model</span>';
+  lucide.createIcons();
 }
 
 init();
