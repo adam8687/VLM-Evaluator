@@ -1,0 +1,31 @@
+:root {
+  --accent: #247ec7;
+  --accent-glow: rgba(36,126,199,0.25);
+  --surface: #0f1117;
+  --surface-2: #161b27;
+  --surface-3: #1e2435;
+  --surface-4: #252d40;
+  --border: #2a3348;
+  --text-primary: #e8eaf6;
+  --text-secondary: #8892a4;
+  --green: #22d3a2;
+  --red: #f45b7a;
+  --yellow: #f5c542;
+  --blue: #38bdf8;
+
+  /* Animation Easing Curves */
+  --ease-fluid: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.05);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--surface-2); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }

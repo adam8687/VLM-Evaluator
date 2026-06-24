@@ -1,0 +1,11 @@
+{
+  "name": "vlm-evaluator",
+  "private": true,
+  "scripts": {
+    "build": "esbuild js/main.js --bundle --format=iife --outfile=js/app.bundle.js",
+    "serve": "python -m http.server 8080"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
